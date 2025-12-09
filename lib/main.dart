@@ -127,9 +127,93 @@ class StoparriveInfo {
   }
 }
 
+class StoparriveInfo_onAI2 {
+  final int arrprevstationcnt; // 노선 IDv
+  final int arrtime; // 노선 번호 (예: 100번)v
+  final String nodeID; // 노선 유형v
+  final String nodeName; // 기점 정류장 이름v
+  final String routeID; //v
+  final String routeNo; //v
+  final String routeTp; //v
+  final String vehicleTp; //v
+  final String mode;
+
+  StoparriveInfo_onAI2({
+    required this.arrprevstationcnt,
+    required this.arrtime,
+    required this.nodeID,
+    required this.nodeName,
+    required this.routeID,
+    required this.routeNo,
+    required this.routeTp,
+    required this.vehicleTp,
+    required this.mode,
+  });
+
+  factory StoparriveInfo_onAI2.fromJson(Map<String, dynamic> json) {
+    return StoparriveInfo_onAI2(
+      arrprevstationcnt: json['arrprevstationcnt'] ?? -1,
+      arrtime: json['arrtime'] ?? -1,
+      nodeID: json['nodeid'] ?? 'N/A',
+      nodeName: json['nodenm'] ?? 'N/A',
+      routeID: json['routeid'] ?? 'N/A',
+      routeNo: json['routeno']?.toString() ?? 'N/A',
+      routeTp: json['routetp'] ?? 'N/A',
+      vehicleTp: json['vehicletp'] ?? 'N/A',
+      mode: json['mode'] ?? 'N/A',
+    );
+  }
+}
+
+class StoparriveInfo_onAI {
+  final int arrprevstationcnt; // 노선 IDv
+  final int arrtime; // 노선 번호 (예: 100번)v
+  final String routeID; //v
+
+  StoparriveInfo_onAI({
+    required this.arrprevstationcnt,
+    required this.arrtime,
+    required this.routeID,
+  });
+
+  factory StoparriveInfo_onAI.fromJson(Map<String, dynamic> json) {
+    return StoparriveInfo_onAI(
+      arrprevstationcnt: json['remaining_stops'] ?? -1,
+      arrtime: json['eta_seconds'] ?? -1,
+      routeID: json['routeid'] ?? 'N/A',
+    );
+  }
+}
+
+class busposition_onAI {
+  final String nodeID;
+  final String nodeName;
+  final int nodeOrd;
+  final String vehicleNo;
+  final String status;
+
+  busposition_onAI({
+    required this.nodeID,
+    required this.nodeName,
+    required this.nodeOrd,
+    required this.vehicleNo,
+    required this.status,
+  });
+
+  factory busposition_onAI.fromJson(Map<String, dynamic> json) {
+    return busposition_onAI(
+      nodeID: json['current_nodeid'] ?? 'N/A',
+      nodeName: json['current_nodenm'] ?? 'N/A',
+      nodeOrd: json['current_nodeord'] ?? -1,
+      vehicleNo: json['vehicleno'] ?? 'N/A',
+      status: json['status'] ?? 'N/A',
+    );
+  }
+}
+
 class busRoutePage extends StatefulWidget {
   final String id, number;
-  final int index,apiid;
+  final int index, apiid;
 
   const busRoutePage({
     super.key,
@@ -162,15 +246,15 @@ class _busRoutePage extends State<busRoutePage> {
   void getdata() {
     List<dynamic> routeindexs = bus_route_data[widget.index];
     _controller.runJavaScript('resetPath()');
-    for(int i=0;i<bus_route_inroad_data[widget.index].length;i+=2){
+    for (int i = 0; i < bus_route_inroad_data[widget.index].length; i += 2) {
       final locaResponse = jsonEncode({
         "gpslati": bus_route_inroad_data[widget.index][i],
-        "gpslong": bus_route_inroad_data[widget.index][i+1],
+        "gpslong": bus_route_inroad_data[widget.index][i + 1],
       });
       _controller.runJavaScript('drawBusroute($locaResponse)');
     }
     route = [];
-    if(st._language==Language.Korean){
+    if (st._language == Language.Korean) {
       data = bus_data[widget.index];
       for (int i = 0; i < routeindexs.length; i++) {
         route.add(
@@ -185,8 +269,7 @@ class _busRoutePage extends State<busRoutePage> {
           ),
         );
       }
-    }
-    else {
+    } else {
       data = bus_data_EN[widget.index];
       for (int i = 0; i < routeindexs.length; i++) {
         route.add(
@@ -260,7 +343,7 @@ class _busRoutePage extends State<busRoutePage> {
   @override
   Widget build(BuildContext context) {
     st = Provider.of<Stackwid>(context, listen: true);
-    if(st.apistackid.last!=widget.apiid){
+    if (st.apistackid.last != widget.apiid) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -292,16 +375,20 @@ class _busRoutePage extends State<busRoutePage> {
         break;
       }
     }
-    Text title=Text(
+    Text title = Text(
       '${widget.number} (${data[0]} 방면)',
-      style: TextStyle(fontWeight: FontWeight.bold,
-          fontSize:st._fontsize==Fontsize.Normal ? 22 : 30),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: st._fontsize == Fontsize.Normal ? 22 : 30,
+      ),
     );
-    if(st._language==Language.English) {
+    if (st._language == Language.English) {
       title = Text(
         '${widget.number} (To ${data[0]})',
-        style: TextStyle(fontWeight: FontWeight.bold,
-            fontSize:st._fontsize==Fontsize.Normal ? 22 : 30),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: st._fontsize == Fontsize.Normal ? 22 : 30,
+        ),
       );
     }
     return Scaffold(
@@ -399,7 +486,7 @@ class _busRoutePage extends State<busRoutePage> {
                   if (stop.nodeID == poses[i].nodeID) {
                     stopicon = Icon(
                       Icons.directions_bus,
-                      color: Colors.blue,
+                      color: Colors.green,
                       size: 30,
                     );
                     break;
@@ -411,11 +498,17 @@ class _busRoutePage extends State<busRoutePage> {
                   //const Icon(Icons.circle, color: Colors.grey, size: 15),
                   title: Text(
                     '${stop.nodeName}',
-                    style: TextStyle(fontWeight: FontWeight.bold,
-                        fontSize:st._fontsize==Fontsize.Normal ? 15 : 30),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
+                    ),
                   ),
-                  subtitle: Text('${stop.nodeNo}',style: TextStyle(
-                      fontSize: st._fontsize==Fontsize.Normal ? 15 : 20)),
+                  subtitle: Text(
+                    '${stop.nodeNo}',
+                    style: TextStyle(
+                      fontSize: st._fontsize == Fontsize.Normal ? 15 : 20,
+                    ),
+                  ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 14),
                   onTap: () {
                     final selectstop = jsonEncode({
@@ -434,9 +527,345 @@ class _busRoutePage extends State<busRoutePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {setState((){});},
+        onPressed: () {
+          setState(() {});
+        },
         child: const Icon(Icons.refresh),
-        mini:true,
+        mini: true,
+      ),
+    );
+  }
+}
+
+class busRoutePage_onAI extends StatefulWidget {
+  final String id, number;
+  final int index, apiid;
+
+  const busRoutePage_onAI({
+    super.key,
+    required this.id,
+    required this.number,
+    required this.index,
+    required this.apiid,
+  });
+
+  @override
+  State<busRoutePage_onAI> createState() => _busRoutePage_onAI();
+}
+
+class _busRoutePage_onAI extends State<busRoutePage_onAI> {
+  var st;
+  late List<dynamic> data;
+  late List<StopInfo> route;
+  static const String baseUrl1 = "http://43.200.177.50:8000/api/buses/route/";
+
+  void getdata() {
+    List<dynamic> routeindexs = bus_route_data[widget.index];
+    _controller.runJavaScript('resetPath()');
+    for (int i = 0; i < bus_route_inroad_data[widget.index].length; i += 2) {
+      final locaResponse = jsonEncode({
+        "gpslati": bus_route_inroad_data[widget.index][i],
+        "gpslong": bus_route_inroad_data[widget.index][i + 1],
+      });
+      _controller.runJavaScript('drawBusroute($locaResponse)');
+    }
+    route = [];
+    if (st._language == Language.Korean) {
+      data = bus_data[widget.index];
+      for (int i = 0; i < routeindexs.length; i++) {
+        route.add(
+          StopInfo(
+            gpslati: stop_data[routeindexs[i]][3],
+            gpslong: stop_data[routeindexs[i]][4],
+            nodeID: stop_data[routeindexs[i]][0].toString(),
+            nodeName: stop_data[routeindexs[i]][1].toString(),
+            nodeNo: stop_data[routeindexs[i]][2].toString(),
+            nodeOrd: i + 1,
+            stopindex: routeindexs[i],
+          ),
+        );
+      }
+    } else {
+      data = bus_data_EN[widget.index];
+      for (int i = 0; i < routeindexs.length; i++) {
+        route.add(
+          StopInfo(
+            gpslati: stop_data_EN[routeindexs[i]][3],
+            gpslong: stop_data_EN[routeindexs[i]][4],
+            nodeID: stop_data_EN[routeindexs[i]][0].toString(),
+            nodeName: stop_data_EN[routeindexs[i]][1].toString(),
+            nodeNo: stop_data_EN[routeindexs[i]][2].toString(),
+            nodeOrd: i + 1,
+            stopindex: routeindexs[i],
+          ),
+        );
+      }
+    }
+  }
+
+  Future<List<busposition_onAI>> getlocations() async {
+    try {
+      //final id = this.id;
+      // 2. HTTP GET 요청 실행
+      //final response = await http.get(Uri.parse($baseUrl));
+      final url = Uri.parse("$baseUrl1${widget.id}");
+      final response = await http.get(url).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final String body = utf8.decode(response.bodyBytes);
+        final jsonResponse = jsonDecode(body);
+
+        late final List<dynamic> items;
+        //late final List<StoparriveInfo> result;
+        if (jsonResponse.length == 0) {
+          return [];
+        }
+        items = jsonResponse;
+
+        // items 리스트를 RouteInfo 객체 리스트로 변환
+        final List<busposition_onAI> result = items
+            .map((json) => busposition_onAI.fromJson(json))
+            .toList();
+        return result;
+      } else {
+        // 5. 서버 오류 (예: 400 Bad Request, 403 Forbidden 등)
+        throw Exception('API 요청 실패 (Status Code: ${response.statusCode})');
+      }
+    } on TimeoutException {
+      // ✨ 2. 타임아웃 오류: 서버가 요청을 받았지만 5초 안에 응답을 주지 않은 경우
+      print('AI 서버 응답 시간 초과: TimeoutException.');
+      return [];
+      //throw Exception('AI 서버가 응답하지 않습니다.');
+    } catch (e) {
+      // 6. 네트워크 오류 (인터넷 연결 끊김 등)
+      print('AI 버스 위치 네트워크 요청 중 오류 발생: $e');
+      throw Exception('데이터 로드 실패: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.runJavaScript('resetPath()');
+    _controller.runJavaScript('resetlocas()');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    st = Provider.of<Stackwid>(context, listen: true);
+    if (st.apistackid.last != widget.apiid) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Some widget is on top of this page.\nIf you see this, please restart the app.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.grey),
+          ),
+        ),
+      );
+    }
+    getdata();
+    Icon star = Icon(
+      Icons.star_border, // 일반 별 모양 아이콘
+      color: Colors.black, // 아이콘 색상
+    );
+    Map<String, int> check = {'type': 0, 'index': widget.index};
+    bool favorite = false;
+    int favorite_index = -1;
+    for (int i = 0; i < st.favorite_list.length; i++) {
+      if (check['type'] == st.favorite_list[i]['type'] &&
+          check['index'] == st.favorite_list[i]['index']) {
+        star = Icon(
+          Icons.star, // 일반 별 모양 아이콘
+          color: Colors.yellow, // 아이콘 색상
+        );
+        favorite = true;
+        favorite_index = i;
+        break;
+      }
+    }
+    Text title = Text(
+      '${widget.number} (${data[0]} 방면)',
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: st._fontsize == Fontsize.Normal ? 22 : 30,
+        color: Colors.blue,
+      ),
+    );
+    if (st._language == Language.English) {
+      title = Text(
+        '${widget.number} (To ${data[0]})',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: st._fontsize == Fontsize.Normal ? 22 : 30,
+          color: Colors.blue,
+        ),
+      );
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: title,
+        /*Text(
+          '${widget.number} (${data[0]} 방면)',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),*/
+        backgroundColor: Colors.white,
+        actions: <Widget>[
+          // 아이콘으로 만들어진 버튼
+          IconButton(
+            icon: star,
+            // 버튼을 눌렀을 때 실행될 동작
+            onPressed: () {
+              //삭제
+              if (favorite) {
+                st.deleteFavorite(favorite_index);
+              }
+              //추가
+              else {
+                st.addFavorite(check);
+              }
+              setState(() {});
+            },
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+        future: getlocations(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // 로딩 중일 때
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            // 오류 발생 시
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  '오류 발생: ${snapshot.error}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            );
+          }
+
+          if (snapshot.hasData) {
+            // 데이터 수신 성공 시
+            //final List<StopInfo> stops = snapshot.data![0] as List<StopInfo>;
+            final List<busposition_onAI> poses =
+                snapshot.data as List<busposition_onAI>;
+
+            if (route.isEmpty) {
+              return const Center(child: Text('해당 버스의 노선정류장이 없습니다.'));
+            }
+            _controller.runJavaScript('resetlocas()');
+
+            for (int i = 0; i < poses.length; i++) {
+              for (int j = 0; j < route.length; j++) {
+                if (poses[i].nodeID == route[j].nodeID) {
+                  final locaResponse = jsonEncode({
+                    "lati": route[j].gpslati,
+                    "long": route[j].gpslong,
+                  });
+                  _controller.runJavaScript('markloca($locaResponse)');
+                  break;
+                }
+              }
+            }
+
+            // 노선 리스트를 ListView로 출력
+            return Stack(
+              children: [
+                ListView.builder(
+                  itemCount: route.length,
+                  itemBuilder: (context, index) {
+                    final stop = route[index];
+                    Icon stopicon = Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Colors.grey,
+                      size: 30,
+                    );
+                    /*Widget arrow_line=Stack(
+                  alignment: Alignment.center,
+                  children:<Widget>[
+                    Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 40),SizedBox(width: 3,height:180,child:Container(color: Colors.grey))],
+                );*/
+                    for (int i = 0; i < poses.length; i++) {
+                      if (stop.nodeID == poses[i].nodeID) {
+                        stopicon = Icon(
+                          Icons.directions_bus,
+                          color: poses[i].status == "active"
+                              ? Colors.green
+                              : Colors.blue,
+                          size: 30,
+                        );
+                        break;
+                      }
+                    }
+
+                    return ListTile(
+                      leading: stopicon,
+                      //const Icon(Icons.circle, color: Colors.grey, size: 15),
+                      title: Text(
+                        '${stop.nodeName}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${stop.nodeNo}',
+                        style: TextStyle(
+                          fontSize: st._fontsize == Fontsize.Normal ? 15 : 20,
+                        ),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+                      onTap: () {
+                        final selectstop = jsonEncode({
+                          "lati": stop.gpslati,
+                          "long": stop.gpslong,
+                        });
+                        _controller.runJavaScript(
+                          'moveforvisibility($selectstop)',
+                        );
+                      },
+                    );
+                  },
+                ),
+                IgnorePointer(
+                  ignoring: true,
+                  child: Center(
+                    child: Text(
+                      st._language == Language.Korean
+                          ? 'AI 예측 정보이므로\n실제와 차이가 있을 수 있습니다.'
+                          : 'These are AI predictions.\nIt may differ from actual times.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue.withOpacity(0.6),
+                        // 투명도가 있는 연한 회색으로 설정
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          // 기본 반환 (발생할 일은 거의 없음)
+          return const Center(child: Text('데이터를 찾을 수 없습니다.'));
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {});
+        },
+        child: const Icon(Icons.refresh),
+        mini: true,
       ),
     );
   }
@@ -468,6 +897,7 @@ class _DetailPage extends State<DetailPage> {
   //static const String baseUrl = "https://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnThrghRouteList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=150&_type=json&cityCode=37050&nodeid=";
   static const String baseUrl1 =
       "https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoArvlPrearngeInfoList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=30&_type=json&cityCode=37050&nodeId=";
+  static const String baseUrl2 = "http://43.200.177.50:8000/api/arrival/";
 
   @override
   void initState() {
@@ -475,7 +905,7 @@ class _DetailPage extends State<DetailPage> {
   }
 
   void getdata() {
-    if(st._language==Language.Korean){
+    if (st._language == Language.Korean) {
       data = stop_data[widget.index];
       List<dynamic> busindexs = stop_buses_data[widget.index];
       buses = [];
@@ -491,8 +921,7 @@ class _DetailPage extends State<DetailPage> {
           ),
         );
       }
-    }
-    else{
+    } else {
       data = stop_data_EN[widget.index];
       List<dynamic> busindexs = stop_buses_data[widget.index];
       buses = [];
@@ -555,10 +984,51 @@ class _DetailPage extends State<DetailPage> {
     }
   }
 
+  Future<List<StoparriveInfo_onAI>> getarriveInfos_AI() async {
+    if (st._aimode == false) {
+      return [];
+    }
+    try {
+      // 2. HTTP GET 요청 실행
+      final url = Uri.parse("$baseUrl2${widget.id}");
+      final response = await http.get(url).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final String body = utf8.decode(response.bodyBytes);
+        final jsonResponse = jsonDecode(body);
+
+        late final List<dynamic> items;
+        //late final List<StoparriveInfo> result;
+        if (jsonResponse.length == 0) {
+          return [];
+        }
+        items = jsonResponse;
+        final List<StoparriveInfo_onAI> result = items
+            .map((json) => StoparriveInfo_onAI.fromJson(json))
+            .toList();
+        return result; //items.map((json) => StoparriveInfo.fromJson(json)).toList();
+      } else {
+        // 5. 서버 오류 (예: 400 Bad Request, 403 Forbidden 등)
+        return [];
+        //throw Exception('API 요청 실패 (Status Code: ${response.statusCode})');
+      }
+    } on TimeoutException {
+      // ✨ 2. 타임아웃 오류: 서버가 요청을 받았지만 5초 안에 응답을 주지 않은 경우
+      print('AI 서버 응답 시간 초과: TimeoutException.');
+      return [];
+      //throw Exception('AI 서버가 응답하지 않습니다.');
+    } catch (e) {
+      // 6. 네트워크 오류 (인터넷 연결 끊김 등)
+      print('AI 도착 네트워크 요청 중 오류 발생: $e');
+      return [];
+      //throw Exception('데이터 로드 실패: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     st = Provider.of<Stackwid>(context, listen: true);
-    if(st.apistackid.last!=widget.apiid){
+    if (st.apistackid.last != widget.apiid) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -595,8 +1065,10 @@ class _DetailPage extends State<DetailPage> {
         title: Text(
           //'${widget.name}',
           '${data[1]}',
-          style: TextStyle(fontWeight: FontWeight.bold,
-              fontSize:st._fontsize==Fontsize.Normal ? 22 : 30),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: st._fontsize == Fontsize.Normal ? 22 : 30,
+          ),
         ),
         backgroundColor: Colors.white,
         actions: <Widget>[
@@ -620,8 +1092,12 @@ class _DetailPage extends State<DetailPage> {
       ),
       body: FutureBuilder(
         //<List<RouteInfo>>(
-        future: getarriveInfos(),
-        //Future.wait([getStopRoutes(),getarriveInfos()]),//getStopRoutes(), // 데이터 로드 함수 호출
+        future: //getarriveInfos(),
+        Future.wait([
+          getarriveInfos(),
+          getarriveInfos_AI(),
+        ]),
+        //getStopRoutes(), // 데이터 로드 함수 호출
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때
@@ -630,15 +1106,17 @@ class _DetailPage extends State<DetailPage> {
 
           if (snapshot.hasError) {
             // 오류 발생 시
-            String errortext='앗! 문제가 발생했어요. 새로고침 해주세요.\n(오류 : ${snapshot.error})';
-            if(st._language==Language.English){
-              errortext='Oops! Something went wrong. Please refresh.\n(Error: ${snapshot.error})';
+            String errortext =
+                '앗! 문제가 발생했어요. 새로고침 해주세요.\n(오류 : ${snapshot.error})';
+            if (st._language == Language.English) {
+              errortext =
+                  'Oops! Something went wrong. Please refresh.\n(Error: ${snapshot.error})';
             }
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  errortext,//'\nError: ${snapshot.error}',
+                  errortext, //'\nError: ${snapshot.error}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.blueGrey),
                 ),
@@ -649,8 +1127,15 @@ class _DetailPage extends State<DetailPage> {
           if (snapshot.hasData) {
             // 데이터 수신 성공 시
             final List<StoparriveInfo> arrives =
-                snapshot.data as List<StoparriveInfo>;
+                snapshot.data![0]
+                    as List<
+                      StoparriveInfo
+                    >; //snapshot.data as List<StoparriveInfo>;
+            final List<StoparriveInfo_onAI> arrives_onAI =
+                snapshot.data![1] as List<StoparriveInfo_onAI>;
+
             int arricount = arrives.length;
+            int arriAIcount = arrives_onAI.length;
             if (buses.isEmpty) {
               return const Center(child: Text('해당 정류장을 경유하는 노선이 없습니다.'));
             }
@@ -663,123 +1148,281 @@ class _DetailPage extends State<DetailPage> {
                 }
               }
             }
+            for (int i = 0; i < arrives_onAI.length; i++) {
+              for (int j = 0; j < buses.length; j++) {
+                if (arrives_onAI[i].routeID == buses[j].routeId) {
+                  RouteInfo temp = buses.removeAt(j);
+                  buses.insert(0, temp);
+                  break;
+                }
+              }
+            }
             // 노선 리스트를 ListView로 출력
-            return ListView.builder(
-              itemCount: buses.length,
-              itemBuilder: (context, index) {
-                final route = buses[index];
-                String arrtime='도착 예정 없음';
-                if(st._language==Language.English) {
-                  arrtime='N/A';
-                }
-                TextStyle style = TextStyle(fontSize: 10);
-                Icon busicon = Icon(Icons.directions_bus, color: Colors.green);
-                if (route.routeTp == '좌석버스') {
-                  busicon = Icon(Icons.directions_bus, color: Colors.purple);
-                }
-                for (int i = 0; i < arricount; i++) {
-                  if (route.routeId == arrives[i].routeID) {
-                    if(st._language==Language.Korean) {
-                      arrtime = '${(arrives[i].arrtime / 60).toInt()}분';
-                    }
-                    else{
-                      arrtime = '${(arrives[i].arrtime / 60).toInt()}min';
-                    }
-                    style = TextStyle(
-                      fontSize: st._fontsize==Fontsize.Normal ? 15 : 30,
-                      fontWeight: FontWeight.bold,
-                    );
-                    if ((arrives[i].arrtime / 60) <= 2||arrives[i].arrprevstationcnt<=1) {
-                      if(st._language==Language.Korean) {
-                        arrtime = '곧도착($arrtime)';
-                      }
-                      else{
-                        arrtime = 'Soon($arrtime)';
+            bool _inAI = false;
+
+            List<Widget> result_widgets = [
+              ListView.builder(
+                itemCount: buses.length,
+                itemBuilder: (context, index) {
+                  final route = buses[index];
+                  String arrtime = '도착 예정 없음';
+                  if (st._language == Language.English) {
+                    arrtime = 'N/A';
+                  }
+                  TextStyle style = TextStyle(fontSize: 10);
+                  Icon busicon = Icon(
+                    Icons.directions_bus,
+                    color: Colors.green,
+                  );
+                  if (route.routeTp == '좌석버스') {
+                    busicon = Icon(Icons.directions_bus, color: Colors.purple);
+                  }
+                  for (int i = 0; i < arricount; i++) {
+                    if (route.routeId == arrives[i].routeID) {
+                      if (st._language == Language.Korean) {
+                        arrtime = '${(arrives[i].arrtime / 60).toInt()}분';
+                      } else {
+                        arrtime = '${(arrives[i].arrtime / 60).toInt()}min';
                       }
                       style = TextStyle(
-                        fontSize: st._fontsize==Fontsize.Normal ? 15 : 30,
+                        fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
                         fontWeight: FontWeight.bold,
-                        color: Colors.red,
                       );
+                      if ((arrives[i].arrtime / 60) <= 2 ||
+                          arrives[i].arrprevstationcnt <= 1) {
+                        if (st._language == Language.Korean) {
+                          arrtime = '곧도착($arrtime)';
+                        } else {
+                          arrtime = 'Soon($arrtime)';
+                        }
+                        style = TextStyle(
+                          fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        );
+                      }
+                      break;
                     }
-                    break;
                   }
-                }
-                Text subTitle = Text('${route.endStName}방면',
-                    style: TextStyle(fontSize:st._fontsize==Fontsize.Normal ? 14 : 20));
-                if(st._language==Language.English) {
-                  subTitle = Text('To ${route.endStName}',
-                      style: TextStyle(fontSize:st._fontsize==Fontsize.Normal ? 14 : 20));
-                }
-                return ListTile(
-                  leading: busicon,
-                  //const Icon(Icons.directions_bus, color: Colors.indigo),
-                  title: Text(
-                    '${route.routeNo}',
-                    style: TextStyle(fontWeight: FontWeight.bold,
-                        fontSize:st._fontsize==Fontsize.Normal ? 16 : 30),
-                  ),
-                  subtitle: subTitle,//Text('${route.endStName}방면'),
-                  //Text('기점: ${route.startStName} | 종점: ${route.endStName}'),
-                  trailing: Text(arrtime, style: style),
-                  //const Icon(Icons.arrow_forward_ios, size: 14),
-                  onTap: () {
-                    Widget addw = Align(
-                      // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.5,
-                        width: double.infinity,
-                        child: busRoutePage(
-                          id: route.routeId,
-                          number: route.routeNo,
-                          index: route.busindex,
-                          apiid: st.allocateapiid(),
-                        ),
+                  bool _AI = false;
+                  for (int i = 0; i < arriAIcount; i++) {
+                    if (route.routeId == arrives_onAI[i].routeID) {
+                      _AI = true;
+                      if (_inAI == false) _inAI = true;
+                      int arrtime_minus = arrives_onAI[i].arrtime - 60;
+                      if (arrtime_minus > 60) {
+                        if (st._language == Language.Korean) {
+                          arrtime = '${(arrtime_minus / 60).toInt()}분';
+                        } else {
+                          arrtime = '${(arrtime_minus / 60).toInt()}min';
+                        }
+                        style = TextStyle(
+                          fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        );
+                      } else {
+                        if (st._language == Language.Korean) {
+                          arrtime = '곧도착';
+                        } else {
+                          arrtime = 'Soon';
+                        }
+                        style = TextStyle(
+                          fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        );
+                      }
+                    }
+                  }
+                  Text subTitle = Text(
+                    '${route.endStName}방면',
+                    style: TextStyle(
+                      fontSize: st._fontsize == Fontsize.Normal ? 14 : 20,
+                    ),
+                  );
+                  if (st._language == Language.English) {
+                    subTitle = Text(
+                      'To ${route.endStName}',
+                      style: TextStyle(
+                        fontSize: st._fontsize == Fontsize.Normal ? 14 : 20,
                       ),
                     );
-                    st.updateStack(context, addw, 2);
-                  },
-                  onLongPress: (){
-                    showDialog(
+                  }
+                  return ListTile(
+                    leading: busicon,
+                    //const Icon(Icons.directions_bus, color: Colors.indigo),
+                    title: Text(
+                      '${route.routeNo}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: st._fontsize == Fontsize.Normal ? 16 : 30,
+                        color: _AI ? Colors.blue : Colors.black,
+                      ),
+                    ),
+                    subtitle: subTitle,
+                    trailing: Text(arrtime, style: style),
+                    onTap: () {
+                      if (st._aimode &&
+                          (route.busindex == 263 ||
+                              route.busindex == 96 ||
+                              route.busindex == 325 ||
+                              route.busindex == 326)) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('AI모드 버스'),
+                              // content에 원하는 내용을 추가할 수 있습니다.
+                              content: st._language == Language.Korean
+                                  ? Text('이 버스는 AI모드를 지원해요. AI모드로 보실래요?')
+                                  : Text(
+                                      'This bus supports AI mode. Do you want to see it?',
+                                    ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: st._language == Language.Korean
+                                      ? Text('예')
+                                      : Text('Yes'),
+                                  onPressed: () {
+                                    Widget addw = Align(
+                                      // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                      alignment: Alignment.bottomCenter,
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(
+                                              this.context,
+                                            ).size.height *
+                                            0.5,
+                                        width: double.infinity,
+                                        child: busRoutePage_onAI(
+                                          id: route.routeId,
+                                          number: route.routeNo,
+                                          index: route.busindex,
+                                          apiid: st.allocateapiid(),
+                                        ),
+                                      ),
+                                    );
+                                    st.updateStack(this.context, addw, 2);
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: st._language == Language.Korean
+                                      ? Text('아니오')
+                                      : Text('No'),
+                                  onPressed: () {
+                                    Widget addw = Align(
+                                      // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                      alignment: Alignment.bottomCenter,
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(
+                                              this.context,
+                                            ).size.height *
+                                            0.5,
+                                        width: double.infinity,
+                                        child: busRoutePage(
+                                          id: route.routeId,
+                                          number: route.routeNo,
+                                          index: route.busindex,
+                                          apiid: st.allocateapiid(),
+                                        ),
+                                      ),
+                                    );
+                                    st.updateStack(this.context, addw, 2);
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        Widget addw = Align(
+                          // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            width: double.infinity,
+                            child: busRoutePage(
+                              id: route.routeId,
+                              number: route.routeNo,
+                              index: route.busindex,
+                              apiid: st.allocateapiid(),
+                            ),
+                          ),
+                        );
+                        st.updateStack(context, addw, 2);
+                      }
+                    },
+                    onLongPress: () {
+                      showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
                             // title에 버스 번호를 표시합니다.
                             title: Text('${route.routeNo}'),
                             // content에 원하는 내용을 추가할 수 있습니다.
-                            content:st._language==Language.Korean
+                            content: st._language == Language.Korean
                                 ? Text('이 버스의 도착시간을 메인화면에 추가하시겠습니까?')
-                                : Text('Would you like to add this bus arrival time to the main screen?'),
+                                : Text(
+                                    'Would you like to add this bus arrival time to the main screen?',
+                                  ),
                             actions: <Widget>[
                               TextButton(
-                                child: st._language==Language.Korean
-                                    ?Text('예')
-                                    :Text('Yes'),
+                                child: st._language == Language.Korean
+                                    ? Text('예')
+                                    : Text('Yes'),
                                 onPressed: () {
-                                  st.setminiarri(widget.id,widget.index, route.routeId);
+                                  st.setminiarri(
+                                    widget.id,
+                                    widget.index,
+                                    route.routeId,
+                                  );
                                   Navigator.of(context).pop();
                                 },
                               ),
                               TextButton(
-                                child: st._language==Language.Korean
-                                    ?Text('아니오')
-                                    :Text('No'),
+                                child: st._language == Language.Korean
+                                    ? Text('아니오')
+                                    : Text('No'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                               ),
                             ],
                           );
-                        }
-                    );
-                  },
-                );
-              },
-            );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ];
+            if (_inAI) {
+              result_widgets.add(
+                IgnorePointer(
+                  ignoring: true,
+                  child: Center(
+                    child: Text(
+                      st._language == Language.Korean
+                          ? 'AI 예측 정보이므로\n실제와 차이가 있을 수 있습니다.'
+                          : 'These are AI predictions.\nIt may differ from actual times.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue.withOpacity(
+                          0.6,
+                        ), // 투명도가 있는 연한 회색으로 설정
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              );
+            }
+            return Stack(children: result_widgets);
           }
 
           // 기본 반환 (발생할 일은 거의 없음)
@@ -787,18 +1430,26 @@ class _DetailPage extends State<DetailPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {setState((){});},
+        onPressed: () {
+          setState(() {});
+        },
         child: const Icon(Icons.refresh),
-        mini:true,
+        mini: true,
       ),
     );
   }
 }
 
 class miniarrivepage extends StatefulWidget {
-  final String nodeid,routeid;
+  final String nodeid, routeid;
   final int nodeindex;
-  const miniarrivepage({super.key,required this.nodeid,required this.nodeindex,required this.routeid});
+
+  const miniarrivepage({
+    super.key,
+    required this.nodeid,
+    required this.nodeindex,
+    required this.routeid,
+  });
 
   @override
   State<miniarrivepage> createState() => _miniarrivepage();
@@ -807,11 +1458,14 @@ class miniarrivepage extends StatefulWidget {
 class _miniarrivepage extends State<miniarrivepage> {
   late String baseUrl;
   var st;
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    baseUrl="https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoSpcifyRouteBusArvlPrearngeInfoList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=10&_type=json&cityCode=37050&nodeId=${widget.nodeid}&routeId=${widget.routeid}";
+    baseUrl =
+        "https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoSpcifyRouteBusArvlPrearngeInfoList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=10&_type=json&cityCode=37050&nodeId=${widget.nodeid}&routeId=${widget.routeid}";
   }
+
   Future<List<StoparriveInfo>> getarriveInfos() async {
     try {
       // 2. HTTP GET 요청 실행
@@ -855,7 +1509,8 @@ class _miniarrivepage extends State<miniarrivepage> {
       throw Exception('데이터 로드 실패: $e');
     }
   }
-  Widget _buildInfoCard(String mainText, String subText) {//todo 형태 깎기
+
+  Widget _buildInfoCard(String mainText, String subText) {
     return Card(
       elevation: 4.0, // 약간의 그림자 효과
 
@@ -868,22 +1523,22 @@ class _miniarrivepage extends State<miniarrivepage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // 양쪽 끝으로 정렬
           children: [
             // 왼쪽: 버스 번호와 도착 정보
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start, // 텍스트 왼쪽 정렬
-                  mainAxisAlignment: MainAxisAlignment.center, // 수직 중앙 정렬
-                  children: [
-                    Flexible(
-                      child:Text(
-                        mainText,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize:20,
-                        ),
-                        //overflow: TextOverflow.ellipsis, // 글자가 길면 ... 처리
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // 텍스트 왼쪽 정렬
+                mainAxisAlignment: MainAxisAlignment.center, // 수직 중앙 정렬
+                children: [
+                  Flexible(
+                    child: Text(
+                      mainText,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
                       ),
+                      //overflow: TextOverflow.ellipsis, // 글자가 길면 ... 처리
                     ),
-                    /*
+                  ),
+                  /*
                     Text(
                       mainText,
                       style: TextStyle(
@@ -892,46 +1547,17 @@ class _miniarrivepage extends State<miniarrivepage> {
                       ),
                       overflow: TextOverflow.ellipsis, // 글자가 길면 ... 처리
                     ),*/
-                    Text(
-                      subText,
-                      style: TextStyle(
-                        fontSize:14,
-                        color: Colors.grey[600],
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-
-            /*
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // 텍스트 왼쪽 정렬
-                mainAxisAlignment: MainAxisAlignment.center, // 수직 중앙 정렬
-                children: [
-                  Text(
-                    mainText,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: st._fontsize == Fontsize.Normal ? 20 : 28,
-                    ),
-                    overflow: TextOverflow.ellipsis, // 글자가 길면 ... 처리
-                  ),
                   Text(
                     subText,
-                    style: TextStyle(
-                      fontSize: st._fontsize == Fontsize.Normal ? 14 : 20,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
-            ),*/
+            ),
             // 오른쪽: 닫기(X) 버튼
             Column(
-              children:<Widget>[
+              children: <Widget>[
                 IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () {
@@ -940,10 +1566,12 @@ class _miniarrivepage extends State<miniarrivepage> {
                   },
                 ),
                 IconButton(
-                  icon:Icon(Icons.refresh),
-                  onPressed: () {setState((){});},
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    setState(() {});
+                  },
                 ),
-              ]
+              ],
             ),
             /*
             IconButton(
@@ -958,9 +1586,10 @@ class _miniarrivepage extends State<miniarrivepage> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
-    st=Provider.of<Stackwid>(context, listen:true);
+    st = Provider.of<Stackwid>(context, listen: true);
     return FutureBuilder<List<StoparriveInfo>>(
       future: getarriveInfos(), // 비동기 API 호출 함수
       builder: (context, snapshot) {
@@ -970,19 +1599,17 @@ class _miniarrivepage extends State<miniarrivepage> {
         }
         // 에러가 발생했을 때
         if (snapshot.hasError) {
-          if(st._language==Language.Korean){
+          if (st._language == Language.Korean) {
             return _buildInfoCard('오류', '정보를 불러올 수 없습니다.');
-          }
-          else{
+          } else {
             return _buildInfoCard('Error', 'Failed to load data.');
           }
         }
         // 데이터가 없거나, 버스가 운행 종료되었을 때
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          if(st._language==Language.Korean){
+          if (st._language == Language.Korean) {
             return _buildInfoCard('정보 없음', '');
-          }
-          else{
+          } else {
             return _buildInfoCard('No Bus', '');
           }
         }
@@ -992,11 +1619,11 @@ class _miniarrivepage extends State<miniarrivepage> {
 
         // 표시할 텍스트들을 준비
         final busNo = arriveInfo.routeNo;
-        final nodeNm=arriveInfo.nodeName;
+        final nodeNm = arriveInfo.nodeName;
         final remainingTime = (arriveInfo.arrtime / 60).toInt();
         final remainingStops = arriveInfo.arrprevstationcnt;
 
-        final mainText = st._language==Language.Korean
+        final mainText = st._language == Language.Korean
             ? '${busNo}, ${nodeNm}까지'
             : '${busNo} to ${stop_data_EN[widget.nodeindex][1]}';
         final subText = st._language == Language.Korean
@@ -1006,6 +1633,433 @@ class _miniarrivepage extends State<miniarrivepage> {
         // 만들어진 텍스트로 카드 UI를 구성하여 반환
         return _buildInfoCard(mainText, subText);
       },
+    );
+  }
+}
+
+class DetailPage_onAI extends StatefulWidget {
+  final String id, name;
+  final int index, apiid;
+
+  const DetailPage_onAI({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.index,
+    required this.apiid,
+  });
+
+  //const DetailPage({super.key, required this.index});
+  @override
+  State<DetailPage_onAI> createState() => _DetailPage_onAI();
+}
+
+class _DetailPage_onAI extends State<DetailPage_onAI> {
+  var st;
+  late List<dynamic> data;
+  late List<RouteInfo> buses;
+  static const String baseUrl = "http://13.125.234.0:8000/api/buses/station/";//todo limit 물어보기
+
+  void getdata() {
+    if (st._language == Language.Korean) {
+      data = stop_data[widget.index];
+      List<dynamic> busindexs = stop_buses_data[widget.index];
+      buses = [];
+      for (int i = 0; i < busindexs.length; i++) {
+        buses.add(
+          RouteInfo(
+            routeId: bus_data[busindexs[i]][1].toString(),
+            routeNo: bus_data[busindexs[i]][2].toString(),
+            routeTp: bus_data[busindexs[i]][3].toString(),
+            startStName: bus_data[busindexs[i]][4].toString(),
+            endStName: bus_data[busindexs[i]][0].toString(),
+            busindex: busindexs[i],
+          ),
+        );
+      }
+    } else {
+      data = stop_data_EN[widget.index];
+      List<dynamic> busindexs = stop_buses_data[widget.index];
+      buses = [];
+      for (int i = 0; i < busindexs.length; i++) {
+        buses.add(
+          RouteInfo(
+            routeId: bus_data_EN[busindexs[i]][1].toString(),
+            routeNo: bus_data_EN[busindexs[i]][2].toString(),
+            routeTp: bus_data_EN[busindexs[i]][3].toString(),
+            startStName: bus_data_EN[busindexs[i]][4].toString(),
+            endStName: bus_data_EN[busindexs[i]][0].toString(),
+            busindex: busindexs[i],
+          ),
+        );
+      }
+    }
+  }
+
+  Future<List<StoparriveInfo_onAI2>> getarriveInfos() async {
+    try {
+      final url = Uri.parse("$baseUrl${widget.id}");
+      final response = await http.get(url).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final String body = utf8.decode(response.bodyBytes);
+        final jsonResponse = jsonDecode(body);
+
+        late final List<dynamic> items;
+        //late final List<StoparriveInfo> result;
+
+        if (jsonResponse.isEmpty) {
+          // 데이터가 null 이면 빈 리스트 반환
+          return [];
+        }
+        items = jsonResponse;
+        final List<StoparriveInfo_onAI2> result = items
+            .map((json) => StoparriveInfo_onAI2.fromJson(json))
+            .toList();
+        return result; //items.map((json) => StoparriveInfo.fromJson(json)).toList();
+      } else {
+        // 5. 서버 오류 (예: 400 Bad Request, 403 Forbidden 등)
+        throw Exception('API 요청 실패 (Status Code: ${response.statusCode})');
+      }
+    } on TimeoutException {
+      // ✨ 2. 타임아웃 오류: 서버가 요청을 받았지만 5초 안에 응답을 주지 않은 경우
+      print('AI 서버 응답 시간 초과: TimeoutException.');
+      return [];
+      //throw Exception('AI 서버가 응답하지 않습니다.');
+    } catch (e) {
+      // 6. 네트워크 오류 (인터넷 연결 끊김 등)
+      print('AI 도착 네트워크 요청 중 오류 발생: $e');
+      throw Exception('데이터 로드 실패: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    st = Provider.of<Stackwid>(context, listen: true);
+    if (st.apistackid.last != widget.apiid) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Some widget is on top of this page.\nIf you see this, please restart the app.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.grey),
+          ),
+        ),
+      );
+    }
+    getdata();
+    Icon star = Icon(
+      Icons.star_border, // 일반 별 모양 아이콘
+      color: Colors.black, // 아이콘 색상
+    );
+    Map<String, int> check = {'type': 1, 'index': widget.index};
+    bool favorite = false;
+    int favorite_index = -1;
+    for (int i = 0; i < st.favorite_list.length; i++) {
+      if (check['type'] == st.favorite_list[i]['type'] &&
+          check['index'] == st.favorite_list[i]['index']) {
+        star = Icon(
+          Icons.star, // 일반 별 모양 아이콘
+          color: Colors.yellow, // 아이콘 색상
+        );
+        favorite = true;
+        favorite_index = i;
+        break;
+      }
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          //'${widget.name}',
+          '${data[1]}',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: st._fontsize == Fontsize.Normal ? 22 : 30,
+            color: Colors.blue,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        actions: <Widget>[
+          // 아이콘으로 만들어진 버튼
+          IconButton(
+            icon: star,
+            // 버튼을 눌렀을 때 실행될 동작
+            onPressed: () {
+              //삭제
+              if (favorite) {
+                st.deleteFavorite(favorite_index);
+              }
+              //추가
+              else {
+                st.addFavorite(check);
+              }
+              setState(() {});
+            },
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+        //<List<RouteInfo>>(
+        future: getarriveInfos(),
+        //Future.wait([getStopRoutes(),getarriveInfos()]),//getStopRoutes(), // 데이터 로드 함수 호출
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // 로딩 중일 때
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            // 오류 발생 시
+            String errortext =
+                '앗! 문제가 발생했어요. 새로고침 해주세요.\n(오류 : ${snapshot.error})';
+            if (st._language == Language.English) {
+              errortext =
+                  'Oops! Something went wrong. Please refresh.\n(Error: ${snapshot.error})';
+            }
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  errortext, //'\nError: ${snapshot.error}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.blueGrey),
+                ),
+              ),
+            );
+          }
+
+          if (snapshot.hasData) {
+            // 데이터 수신 성공 시
+            final List<StoparriveInfo_onAI2> arrives =
+                snapshot.data as List<StoparriveInfo_onAI2>;
+            int arricount = arrives.length;
+            if (buses.isEmpty) {
+              return const Center(child: Text('해당 정류장을 경유하는 노선이 없습니다.'));
+            }
+            for (int i = 0; i < arrives.length; i++) {
+              for (int j = 0; j < buses.length; j++) {
+                if (arrives[i].routeID == buses[j].routeId) {
+                  RouteInfo temp = buses.removeAt(j);
+                  buses.insert(0, temp);
+                  break;
+                }
+              }
+            }
+            // 노선 리스트를 ListView로 출력
+            return Stack(
+              children: [
+                ListView.builder(
+                  itemCount: buses.length,
+                  itemBuilder: (context, index) {
+                    final route = buses[index];
+                    String arrtime = '도착 예정 없음';
+                    if (st._language == Language.English) {
+                      arrtime = 'N/A';
+                    }
+                    TextStyle style = TextStyle(fontSize: 10);
+                    Icon busicon = Icon(
+                      Icons.directions_bus,
+                      color: Colors.green,
+                    );
+                    if (route.routeTp == '좌석버스') {
+                      busicon = Icon(
+                        Icons.directions_bus,
+                        color: Colors.purple,
+                      );
+                    }
+                    for (int i = 0; i < arricount; i++) {
+                      if (route.routeId == arrives[i].routeID) {
+                        if (st._language == Language.Korean) {
+                          arrtime = '${(arrives[i].arrtime / 60).toInt()}분';
+                        } else {
+                          arrtime = '${(arrives[i].arrtime / 60).toInt()}min';
+                        }
+                        style = TextStyle(
+                          fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
+                          fontWeight: FontWeight.bold,
+                        );
+                        if (arrives[i].mode == "predicted") {
+                          style = TextStyle(
+                            fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          );
+                        }
+                        if ((arrives[i].arrtime / 60) <= 2 ||
+                            arrives[i].arrprevstationcnt <= 1) {
+                          if (st._language == Language.Korean) {
+                            arrtime = '곧도착($arrtime)';
+                          } else {
+                            arrtime = 'Soon($arrtime)';
+                          }
+                          style = TextStyle(
+                            fontSize: st._fontsize == Fontsize.Normal ? 15 : 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          );
+                        }
+                        break;
+                      }
+                    }
+                    Text subTitle = Text(
+                      '${route.endStName}방면',
+                      style: TextStyle(
+                        fontSize: st._fontsize == Fontsize.Normal ? 14 : 20,
+                      ),
+                    );
+                    if (st._language == Language.English) {
+                      subTitle = Text(
+                        'To ${route.endStName}',
+                        style: TextStyle(
+                          fontSize: st._fontsize == Fontsize.Normal ? 14 : 20,
+                        ),
+                      );
+                    }
+                    return ListTile(
+                      leading: busicon,
+                      //const Icon(Icons.directions_bus, color: Colors.indigo),
+                      title: Text(
+                        '${route.routeNo}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: st._fontsize == Fontsize.Normal ? 16 : 30,
+                        ),
+                      ),
+                      subtitle: subTitle,
+                      //Text('${route.endStName}방면'),
+                      //Text('기점: ${route.startStName} | 종점: ${route.endStName}'),
+                      trailing: Text(arrtime, style: style),
+                      //const Icon(Icons.arrow_forward_ios, size: 14),
+                      onTap: () {
+                        if (st._aimode &&
+                            (route.busindex == 263 ||
+                                route.busindex == 96 ||
+                                route.busindex == 325 ||
+                                route.busindex == 326)) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('AI모드 버스'),
+                                // content에 원하는 내용을 추가할 수 있습니다.
+                                content: st._language == Language.Korean
+                                    ? Text('이 버스는 AI모드를 지원해요. AI모드로 보실래요?')
+                                    : Text(
+                                        'This bus supports AI mode. Do you want to see it?',
+                                      ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: st._language == Language.Korean
+                                        ? Text('예')
+                                        : Text('Yes'),
+                                    onPressed: () {
+                                      Widget addw = Align(
+                                        // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                        alignment: Alignment.bottomCenter,
+                                        child: Container(
+                                          height:
+                                              MediaQuery.of(
+                                                this.context,
+                                              ).size.height *
+                                              0.5,
+                                          width: double.infinity,
+                                          child: busRoutePage_onAI(
+                                            id: route.routeId,
+                                            number: route.routeNo,
+                                            index: route.busindex,
+                                            apiid: st.allocateapiid(),
+                                          ),
+                                        ),
+                                      );
+                                      st.updateStack(this.context, addw, 2);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: st._language == Language.Korean
+                                        ? Text('아니오')
+                                        : Text('No'),
+                                    onPressed: () {
+                                      Widget addw = Align(
+                                        // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                        alignment: Alignment.bottomCenter,
+                                        child: Container(
+                                          height:
+                                              MediaQuery.of(
+                                                this.context,
+                                              ).size.height *
+                                              0.5,
+                                          width: double.infinity,
+                                          child: busRoutePage(
+                                            id: route.routeId,
+                                            number: route.routeNo,
+                                            index: route.busindex,
+                                            apiid: st.allocateapiid(),
+                                          ),
+                                        ),
+                                      );
+                                      st.updateStack(this.context, addw, 2);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          Widget addw = Align(
+                            // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              width: double.infinity,
+                              child: busRoutePage(
+                                id: route.routeId,
+                                number: route.routeNo,
+                                index: route.busindex,
+                                apiid: st.allocateapiid(),
+                              ),
+                            ),
+                          );
+                          st.updateStack(context, addw, 2);
+                        }
+                      },
+                    );
+                  },
+                ),
+                IgnorePointer(
+                  ignoring: true,
+                  child: Center(
+                    child: Text(
+                      st._language == Language.Korean
+                          ? 'AI 예측 정보이므로\n실제와 차이가 있을 수 있습니다.'
+                          : 'These are AI predictions.\nIt may differ from actual times.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue.withOpacity(0.6),
+                        // 투명도가 있는 연한 회색으로 설정
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          // 기본 반환 (발생할 일은 거의 없음)
+          return const Center(child: Text('데이터를 찾을 수 없습니다.'));
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {});
+        },
+        child: const Icon(Icons.refresh),
+        mini: true,
+      ),
     );
   }
 }
@@ -1080,13 +2134,13 @@ class _Searchpage extends State<Searchpage> {
   @override
   Widget build(BuildContext context) {
     st = Provider.of<Stackwid>(context, listen: true);
-    String label='검색';
-    String hint='항목을 검색하세요';
-    String noResult='검색 결과가 없습니다.';
-    if(st._language==Language.English){
-      label='Search';
-      hint='Enter what you are looking for';
-      noResult='No Result';
+    String label = '검색';
+    String hint = '항목을 검색하세요';
+    String noResult = '검색 결과가 없습니다.';
+    if (st._language == Language.English) {
+      label = 'Search';
+      hint = 'Enter what you are looking for';
+      noResult = 'No Result';
     }
     return Visibility(
       visible: st.search_visibility,
@@ -1137,8 +2191,10 @@ class _Searchpage extends State<Searchpage> {
                       itemBuilder: (context, index) {
                         Text title = Text(
                           _filteredList[index]['text'],
-                          style: TextStyle(fontWeight: FontWeight.bold,
-                              fontSize: st._fontsize==Fontsize.Normal ? 16 : 30),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: st._fontsize == Fontsize.Normal ? 16 : 30,
+                          ),
                         );
                         int type = int.parse(
                           search_data[1][_filteredList[index]['index']],
@@ -1149,14 +2205,22 @@ class _Searchpage extends State<Searchpage> {
                         if (type == 0) {
                           title = Text(
                             '${_filteredList[index]['text']} (${bus_data[dataindex][0]} 방면)',
-                            style: TextStyle(fontWeight: FontWeight.bold,
-                                fontSize: st._fontsize==Fontsize.Normal ? 16 : 30),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: st._fontsize == Fontsize.Normal
+                                  ? 16
+                                  : 30,
+                            ),
                           );
-                          if(st._language==Language.English) {
+                          if (st._language == Language.English) {
                             title = Text(
                               '${_filteredList[index]['text']} (To ${bus_data_EN[dataindex][0]})',
-                              style: TextStyle(fontWeight: FontWeight.bold,
-                              fontSize: st._fontsize==Fontsize.Normal ? 16 : 30),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: st._fontsize == Fontsize.Normal
+                                    ? 16
+                                    : 30,
+                              ),
                             );
                           }
                         }
@@ -1168,8 +2232,124 @@ class _Searchpage extends State<Searchpage> {
                                 title, //Text('${_filteredList[index]['text']}'),
                             onTap: () {
                               if (type == 0) {
+                                if (st._aimode &&
+                                    (dataindex == 263 ||
+                                        dataindex == 96 ||
+                                        dataindex == 325 ||
+                                        dataindex == 326)) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('AI모드 버스'),
+                                        // content에 원하는 내용을 추가할 수 있습니다.
+                                        content: st._language == Language.Korean
+                                            ? Text(
+                                                '이 버스는 AI모드를 지원해요. AI모드로 보실래요?',
+                                              )
+                                            : Text(
+                                                'This bus supports AI mode. Do you want to see it?',
+                                              ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child:
+                                                st._language == Language.Korean
+                                                ? Text('예')
+                                                : Text('Yes'),
+                                            onPressed: () {
+                                              Widget addw = Align(
+                                                // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Container(
+                                                  height:
+                                                      MediaQuery.of(
+                                                        widget.maincontext,
+                                                      ).size.height *
+                                                      0.5,
+                                                  width: double.infinity,
+                                                  child: busRoutePage_onAI(
+                                                    id: bus_data[dataindex][1],
+                                                    number:
+                                                        bus_data[dataindex][2]
+                                                            .toString(),
+                                                    index: dataindex,
+                                                    apiid: st.allocateapiid(),
+                                                  ),
+                                                ),
+                                              );
+                                              st.updateStack(
+                                                widget.maincontext,
+                                                addw,
+                                                2,
+                                              );
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          TextButton(
+                                            child:
+                                                st._language == Language.Korean
+                                                ? Text('아니오')
+                                                : Text('No'),
+                                            onPressed: () {
+                                              Widget addw = Align(
+                                                // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Container(
+                                                  height:
+                                                      MediaQuery.of(
+                                                        widget.maincontext,
+                                                      ).size.height *
+                                                      0.5,
+                                                  width: double.infinity,
+                                                  child: busRoutePage(
+                                                    id: bus_data[dataindex][1],
+                                                    number:
+                                                        bus_data[dataindex][2]
+                                                            .toString(),
+                                                    index: dataindex,
+                                                    apiid: st.allocateapiid(),
+                                                  ),
+                                                ),
+                                              );
+                                              st.updateStack(
+                                                widget.maincontext,
+                                                addw,
+                                                2,
+                                              );
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  Widget addw = Align(
+                                    // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                    alignment: Alignment.bottomCenter,
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(
+                                            widget.maincontext,
+                                          ).size.height *
+                                          0.5,
+                                      width: double.infinity,
+                                      child: busRoutePage(
+                                        id: bus_data[dataindex][1],
+                                        number: bus_data[dataindex][2]
+                                            .toString(),
+                                        index: dataindex,
+                                        apiid: st.allocateapiid(),
+                                      ),
+                                    ),
+                                  );
+                                  st.updateStack(widget.maincontext, addw, 2);
+                                }
                                 //if(int.parse(search_data[1][_filteredList[index]['index']])==0){
                                 //int busindex=int.parse(search_data[2][_filteredList[index]['index']]);
+                                /*
                                 Widget addw = Align(
                                   // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
                                   alignment: Alignment.bottomCenter,
@@ -1188,9 +2368,144 @@ class _Searchpage extends State<Searchpage> {
                                     ),
                                   ),
                                 );
-                                st.updateStack(widget.maincontext, addw, 2);
+                                st.updateStack(widget.maincontext, addw, 2);*/
                               } else {
                                 //int stopindex=int.parse(search_data[2][_filteredList[index]['index']]);
+                                if (st._aimode &&
+                                    (dataindex == 122 ||
+                                        dataindex == 123 ||
+                                        dataindex == 124)) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: st._language == Language.Korean
+                                            ? Text('AI모드 정류장')
+                                            : Text('AI Mode Stop'),
+                                        // content에 원하는 내용을 추가할 수 있습니다.
+                                        content: st._language == Language.Korean
+                                            ? Text(
+                                                '이 정류장은 AI모드를 지원해요. AI모드로 보실래요?',
+                                              )
+                                            : Text(
+                                                'This stop supports AI mode. Do you want to see it?',
+                                              ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child:
+                                                st._language == Language.Korean
+                                                ? Text('예')
+                                                : Text('Yes'),
+                                            onPressed: () {
+                                              final selectstop = jsonEncode({
+                                                "lati": stop_data[dataindex][3],
+                                                "long": stop_data[dataindex][4],
+                                              });
+                                              _controller.runJavaScript(
+                                                'selectstop_insearch($selectstop)',
+                                              );
+
+                                              Widget addw = Align(
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Container(
+                                                  height:
+                                                      MediaQuery.of(
+                                                        widget.maincontext,
+                                                      ).size.height *
+                                                      0.5,
+                                                  width: double.infinity,
+                                                  child: DetailPage_onAI(
+                                                    id: stop_data[dataindex][0],
+                                                    name:
+                                                        stop_data[dataindex][1],
+                                                    index: dataindex,
+                                                    apiid: st.allocateapiid(),
+                                                  ),
+                                                ),
+                                              );
+                                              st.updateStack(
+                                                widget.maincontext,
+                                                addw,
+                                                1,
+                                              );
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          TextButton(
+                                            child:
+                                                st._language == Language.Korean
+                                                ? Text('아니오')
+                                                : Text('No'),
+                                            onPressed: () {
+                                              final selectstop = jsonEncode({
+                                                "lati": stop_data[dataindex][3],
+                                                "long": stop_data[dataindex][4],
+                                              });
+                                              _controller.runJavaScript(
+                                                'selectstop_insearch($selectstop)',
+                                              );
+
+                                              Widget addw = Align(
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Container(
+                                                  height:
+                                                      MediaQuery.of(
+                                                        widget.maincontext,
+                                                      ).size.height *
+                                                      0.5,
+                                                  width: double.infinity,
+                                                  child: DetailPage(
+                                                    id: stop_data[dataindex][0],
+                                                    name:
+                                                        stop_data[dataindex][1],
+                                                    index: dataindex,
+                                                    apiid: st.allocateapiid(),
+                                                  ),
+                                                ),
+                                              );
+                                              st.updateStack(
+                                                widget.maincontext,
+                                                addw,
+                                                1,
+                                              );
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  final selectstop = jsonEncode({
+                                    "lati": stop_data[dataindex][3],
+                                    "long": stop_data[dataindex][4],
+                                  });
+                                  _controller.runJavaScript(
+                                    'selectstop_insearch($selectstop)',
+                                  );
+
+                                  Widget addw = Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(
+                                            widget.maincontext,
+                                          ).size.height *
+                                          0.5,
+                                      width: double.infinity,
+                                      child: DetailPage(
+                                        id: stop_data[dataindex][0],
+                                        name: stop_data[dataindex][1],
+                                        index: dataindex,
+                                        apiid: st.allocateapiid(),
+                                      ),
+                                    ),
+                                  );
+                                  st.updateStack(widget.maincontext, addw, 1);
+                                }
+                                /*
                                 final selectstop = jsonEncode({
                                   "lati": stop_data[dataindex][3],
                                   "long": stop_data[dataindex][4],
@@ -1216,7 +2531,7 @@ class _Searchpage extends State<Searchpage> {
                                     ),
                                   ),
                                 );
-                                st.updateStack(widget.maincontext, addw, 1);
+                                st.updateStack(widget.maincontext, addw, 1);*/
                               }
                             },
                           ),
@@ -1247,11 +2562,11 @@ class _Favoritepage extends State<Favoritepage> {
   @override
   Widget build(BuildContext context) {
     st = Provider.of<Stackwid>(context, listen: true);
-    String title='즐겨찾기';
-    String noFavo='즐겨찾기 목록이 비어있습니다.';
-    if(st._language==Language.English){
-      title='Favorites';
-      noFavo='No List';
+    String title = '즐겨찾기';
+    String noFavo = '즐겨찾기 목록이 비어있습니다.';
+    if (st._language == Language.English) {
+      title = 'Favorites';
+      noFavo = 'No List';
     }
     return Visibility(
       visible: st.favoritepage_visibility,
@@ -1267,8 +2582,11 @@ class _Favoritepage extends State<Favoritepage> {
           ),
           title: Text(
             title,
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                fontSize:st._fontsize==Fontsize.Normal ? 22 : 30),
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: st._fontsize == Fontsize.Normal ? 22 : 30,
+            ),
           ),
           backgroundColor: Colors.white,
           elevation: 1, // AppBar에 약간의 그림자 효과를 줍니다.
@@ -1277,7 +2595,7 @@ class _Favoritepage extends State<Favoritepage> {
             // 비어있다면 안내 메시지를 중앙에 표시합니다.
             ? Center(
                 child: Text(
-                  noFavo,//'즐겨찾기 목록이 비어있습니다.',
+                  noFavo, //'즐겨찾기 목록이 비어있습니다.',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               )
@@ -1302,11 +2620,9 @@ class _Favoritepage extends State<Favoritepage> {
                       color: Colors.indigo,
                     );
                     title = '${bus_data[itemIndex][2]}';
-                    subtitle =
-                        '${bus_data[itemIndex][0]} 방면';
-                    if(st._language==Language.English){
-                      subtitle =
-                      'To ${bus_data_EN[itemIndex][0]}';
+                    subtitle = '${bus_data[itemIndex][0]} 방면';
+                    if (st._language == Language.English) {
+                      subtitle = 'To ${bus_data_EN[itemIndex][0]}';
                     }
                   } else {
                     // 정류장인 경우
@@ -1316,11 +2632,10 @@ class _Favoritepage extends State<Favoritepage> {
                     );
                     title = stop_data[itemIndex][1]; // 정류장 이름
                     subtitle = '${stop_data[itemIndex][2]}';
-                    if(st._language==Language.English) {
+                    if (st._language == Language.English) {
                       title = '${stop_data_EN[itemIndex][1]}';
                       subtitle = '${stop_data_EN[itemIndex][2]}';
                     }
-
                   }
 
                   // 각 항목을 Card와 ListTile로 예쁘게 표시합니다.
@@ -1333,24 +2648,137 @@ class _Favoritepage extends State<Favoritepage> {
                       leading: leadingIcon,
                       title: Text(
                         title,
-                        style: TextStyle(fontWeight: FontWeight.bold,
-                            fontSize:st._fontsize==Fontsize.Normal ? 16 : 25),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: st._fontsize == Fontsize.Normal ? 16 : 25,
+                        ),
                       ),
-                      subtitle: Text(subtitle, style: TextStyle(
-                          fontSize:st._fontsize==Fontsize.Normal ? 14 : 20)),
+                      subtitle: Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: st._fontsize == Fontsize.Normal ? 14 : 20,
+                        ),
+                      ),
                       // X 버튼을 오른쪽에 추가하여 삭제 기능을 구현합니다.
                       trailing: IconButton(
                         icon: const Icon(Icons.close, color: Colors.grey),
                         onPressed: () {
                           // 삭제 버튼을 누르면 해당 항목을 즐겨찾기에서 제거합니다.
                           st.deleteFavorite(index);
-                          setState((){});
+                          setState(() {});
                         },
                       ),
                       onTap: () {
                         // 리스트 항목을 탭했을 때의 동작
                         if (itemType == 0) {
                           // 버스
+                          if (st._aimode &&
+                              (itemIndex == 263 ||
+                                  itemIndex == 96 ||
+                                  itemIndex == 325 ||
+                                  itemIndex == 326)) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('AI모드 버스'),
+                                  // content에 원하는 내용을 추가할 수 있습니다.
+                                  content: st._language == Language.Korean
+                                      ? Text('이 버스는 AI모드를 지원해요. AI모드로 보실래요?')
+                                      : Text(
+                                          'This bus supports AI mode. Do you want to see it?',
+                                        ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: st._language == Language.Korean
+                                          ? Text('예')
+                                          : Text('Yes'),
+                                      onPressed: () {
+                                        Widget addw = Align(
+                                          // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            height:
+                                                MediaQuery.of(
+                                                  widget.maincontext,
+                                                ).size.height *
+                                                0.5,
+                                            width: double.infinity,
+                                            child: busRoutePage_onAI(
+                                              id: bus_data[itemIndex][1],
+                                              number: bus_data[itemIndex][2]
+                                                  .toString(),
+                                              index: itemIndex,
+                                              apiid: st.allocateapiid(),
+                                            ),
+                                          ),
+                                        );
+                                        st.updateStack(
+                                          widget.maincontext,
+                                          addw,
+                                          2,
+                                        );
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: st._language == Language.Korean
+                                          ? Text('아니오')
+                                          : Text('No'),
+                                      onPressed: () {
+                                        Widget addw = Align(
+                                          // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            height:
+                                                MediaQuery.of(
+                                                  widget.maincontext,
+                                                ).size.height *
+                                                0.5,
+                                            width: double.infinity,
+                                            child: busRoutePage(
+                                              id: bus_data[itemIndex][1],
+                                              number: bus_data[itemIndex][2]
+                                                  .toString(),
+                                              index: itemIndex,
+                                              apiid: st.allocateapiid(),
+                                            ),
+                                          ),
+                                        );
+                                        st.updateStack(
+                                          widget.maincontext,
+                                          addw,
+                                          2,
+                                        );
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            Widget addw = Align(
+                              // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                height:
+                                    MediaQuery.of(
+                                      widget.maincontext,
+                                    ).size.height *
+                                    0.5,
+                                width: double.infinity,
+                                child: busRoutePage(
+                                  id: bus_data[itemIndex][1],
+                                  number: bus_data[itemIndex][2].toString(),
+                                  index: itemIndex,
+                                  apiid: st.allocateapiid(),
+                                ),
+                              ),
+                            );
+                            st.updateStack(widget.maincontext, addw, 2);
+                          }
+                          /*
                           Widget addw = Align(
                             alignment: Alignment.bottomCenter,
                             child: Container(
@@ -1368,9 +2796,136 @@ class _Favoritepage extends State<Favoritepage> {
                               ),
                             ),
                           );
-                          st.updateStack(widget.maincontext, addw, 2);
+                          st.updateStack(widget.maincontext, addw, 2);*/
                         } else {
+                          //정류장
+                          if (st._aimode &&
+                              (itemIndex == 122 ||
+                                  itemIndex == 123 ||
+                                  itemIndex == 124)) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: st._language == Language.Korean
+                                      ? Text('AI모드 정류장')
+                                      : Text('AI Mode Stop'),
+                                  // content에 원하는 내용을 추가할 수 있습니다.
+                                  content: st._language == Language.Korean
+                                      ? Text('이 정류장은 AI모드를 지원해요. AI모드로 보실래요?')
+                                      : Text(
+                                          'This stop supports AI mode. Do you want to see it?',
+                                        ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: st._language == Language.Korean
+                                          ? Text('예')
+                                          : Text('Yes'),
+                                      onPressed: () {
+                                        final selectstop = jsonEncode({
+                                          "lati": stop_data[itemIndex][3],
+                                          "long": stop_data[itemIndex][4],
+                                        });
+                                        _controller.runJavaScript(
+                                          'selectstop_insearch($selectstop)',
+                                        );
+                                        Widget addw = Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            height:
+                                                MediaQuery.of(
+                                                  widget.maincontext,
+                                                ).size.height *
+                                                0.5,
+                                            width: double.infinity,
+                                            child: DetailPage_onAI(
+                                              id: stop_data[itemIndex][0],
+                                              name: stop_data[itemIndex][1],
+                                              index: itemIndex,
+                                              apiid: st.allocateapiid(),
+                                            ),
+                                          ),
+                                        );
+                                        st.updateStack(
+                                          widget.maincontext,
+                                          addw,
+                                          1,
+                                        );
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: st._language == Language.Korean
+                                          ? Text('아니오')
+                                          : Text('No'),
+                                      onPressed: () {
+                                        final selectstop = jsonEncode({
+                                          "lati": stop_data[itemIndex][3],
+                                          "long": stop_data[itemIndex][4],
+                                        });
+                                        _controller.runJavaScript(
+                                          'selectstop_insearch($selectstop)',
+                                        );
+
+                                        Widget addw = Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            height:
+                                                MediaQuery.of(
+                                                  widget.maincontext,
+                                                ).size.height *
+                                                0.5,
+                                            width: double.infinity,
+                                            child: DetailPage(
+                                              id: stop_data[itemIndex][0],
+                                              name: stop_data[itemIndex][1],
+                                              index: itemIndex,
+                                              apiid: st.allocateapiid(),
+                                            ),
+                                          ),
+                                        );
+                                        st.updateStack(
+                                          widget.maincontext,
+                                          addw,
+                                          1,
+                                        );
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            final selectstop = jsonEncode({
+                              "lati": stop_data[itemIndex][3],
+                              "long": stop_data[itemIndex][4],
+                            });
+                            _controller.runJavaScript(
+                              'selectstop_insearch($selectstop)',
+                            );
+
+                            Widget addw = Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                height:
+                                    MediaQuery.of(
+                                      widget.maincontext,
+                                    ).size.height *
+                                    0.5,
+                                width: double.infinity,
+                                child: DetailPage(
+                                  id: stop_data[itemIndex][0],
+                                  name: stop_data[itemIndex][1],
+                                  index: itemIndex,
+                                  apiid: st.allocateapiid(),
+                                ),
+                              ),
+                            );
+                            st.updateStack(widget.maincontext, addw, 1);
+                          }
                           // 정류장
+                          /*
                           final selectstop = jsonEncode({
                             "lati": stop_data[itemIndex][3],
                             "long": stop_data[itemIndex][4],
@@ -1396,7 +2951,7 @@ class _Favoritepage extends State<Favoritepage> {
                               ),
                             ),
                           );
-                          st.updateStack(widget.maincontext, addw, 1);
+                          st.updateStack(widget.maincontext, addw, 1);*/
                         }
                       },
                     ),
@@ -1425,12 +2980,12 @@ class _accessibility extends State<accessibility> {
     TextStyle textStyle = TextStyle(
       color: Colors.black,
       fontWeight: FontWeight.bold,
-      fontSize: st._fontsize==Fontsize.Normal ? 18 : 25,
+      fontSize: st._fontsize == Fontsize.Normal ? 18 : 25,
     );
     // 버튼의 현재 위치를 계산합니다. (buttons 메서드의 위치 계산과 동일하게)
     //final double buttonBottomPosition =
     //    MediaQuery.of(context).size.height - 76.0;
-    if(st._language==Language.Korean){
+    if (st._language == Language.Korean) {
       if (st.getlastwidget() == 0) {
         final double buttonBottomPosition =
             MediaQuery.of(context).size.height - 76.0;
@@ -1444,7 +2999,8 @@ class _accessibility extends State<accessibility> {
                 width: double.infinity,
                 height: double.infinity,
                 color: Colors.transparent,
-                child: Align(//const Align(
+                child: Align(
+                  //const Align(
                   alignment: Alignment.bottomLeft,
                   child: Padding(
                     padding: EdgeInsets.only(left: 10.0, bottom: 50.0),
@@ -1474,9 +3030,9 @@ class _accessibility extends State<accessibility> {
               // 검색 버튼 설명
               Positioned(
                 left: 75, // 아이콘 너비(50) + 여백(20)
-                bottom:st._fontsize==Fontsize.Normal
+                bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition + 5
-                    : buttonBottomPosition-2,
+                    : buttonBottomPosition - 2,
                 //buttonBottomPosition + 5, // 첫 번째 버튼의 높이에 맞춤
                 child: Text('검색하기', style: textStyle),
               ),
@@ -1484,9 +3040,9 @@ class _accessibility extends State<accessibility> {
               // 즐겨찾기 버튼 설명
               Positioned(
                 left: 75,
-                bottom: st._fontsize==Fontsize.Normal
-                    ? buttonBottomPosition -55
-                    : buttonBottomPosition-62,
+                bottom: st._fontsize == Fontsize.Normal
+                    ? buttonBottomPosition - 55
+                    : buttonBottomPosition - 62,
                 //buttonBottomPosition - 55, // 두 번째 버튼의 높이에 맞춤
                 child: Text('즐겨찾기', style: textStyle),
               ),
@@ -1494,17 +3050,15 @@ class _accessibility extends State<accessibility> {
               // 도움말 버튼 설명
               Positioned(
                 left: 75,
-                bottom: st._fontsize==Fontsize.Normal
-                    ? buttonBottomPosition -115
-                    : buttonBottomPosition-122,
+                bottom: st._fontsize == Fontsize.Normal
+                    ? buttonBottomPosition - 115
+                    : buttonBottomPosition - 122,
                 //buttonBottomPosition - 115, // 세 번째 버튼의 높이에 맞춤
                 child: Text('도움말', style: textStyle),
               ),
               Positioned(
                 right: 60,
-                top: st._fontsize==Fontsize.Normal
-                ? 37
-                : 30,
+                top: st._fontsize == Fontsize.Normal ? 37 : 30,
                 child: Text('내 위치', style: textStyle),
               ),
             ],
@@ -1537,11 +3091,8 @@ class _accessibility extends State<accessibility> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.black,
-                      size: 50,
-                    ),
+                    Icon(Icons.location_on, color: Colors.black, size: 50),
+
                     //SizedBox(height: 8),
                     /*
                     Flexible(
@@ -1552,7 +3103,6 @@ class _accessibility extends State<accessibility> {
                         style: textStyle,
                       ),
                     ),*/
-
                     Text(
                       '버스 도착 정보를 볼 수 있고,\n누르면 버스 정보를 확인할 수 있어요',
                       textAlign: TextAlign.left,
@@ -1621,7 +3171,7 @@ class _accessibility extends State<accessibility> {
                 // 화면 높이의 중앙보다 살짝 위쪽에 배치하여 DetailPage와 겹치지 않게 합니다.
                 // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.
                 //top: MediaQuery.of(context).size.height * 0.35,
-                top: MediaQuery.of(context).size.height * 0.5+40,
+                top: MediaQuery.of(context).size.height * 0.5 + 40,
                 //bottom: MediaQuery.of(context).size.height * 0.4 - 10,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -1678,8 +3228,7 @@ class _accessibility extends State<accessibility> {
           ),
         );
       }
-    }
-    else{
+    } else {
       if (st.getlastwidget() == 0) {
         final double buttonBottomPosition =
             MediaQuery.of(context).size.height - 76.0;
@@ -1724,9 +3273,9 @@ class _accessibility extends State<accessibility> {
               // 검색 버튼 설명
               Positioned(
                 left: 75, // 아이콘 너비(50) + 여백(20)
-                bottom: st._fontsize==Fontsize.Normal
+                bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition + 5
-                    : buttonBottomPosition-2, // 첫 번째 버튼의 높이에 맞춤
+                    : buttonBottomPosition - 2, // 첫 번째 버튼의 높이에 맞춤
                 //buttonBottomPosition + 5, // 첫 번째 버튼의 높이에 맞춤
                 child: Text('Search', style: textStyle),
               ),
@@ -1734,9 +3283,9 @@ class _accessibility extends State<accessibility> {
               // 즐겨찾기 버튼 설명
               Positioned(
                 left: 75,
-                bottom: st._fontsize==Fontsize.Normal
+                bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition - 55
-                    : buttonBottomPosition -62,
+                    : buttonBottomPosition - 62,
                 //buttonBottomPosition - 55, // 두 번째 버튼의 높이에 맞춤
                 child: Text('Favorites', style: textStyle),
               ),
@@ -1744,17 +3293,15 @@ class _accessibility extends State<accessibility> {
               // 도움말 버튼 설명
               Positioned(
                 left: 75,
-                bottom: st._fontsize==Fontsize.Normal
+                bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition - 115
-                    : buttonBottomPosition-122,
-              //buttonBottomPosition - 115, // 세 번째 버튼의 높이에 맞춤
+                    : buttonBottomPosition - 122,
+                //buttonBottomPosition - 115, // 세 번째 버튼의 높이에 맞춤
                 child: Text('Help', style: textStyle),
               ),
               Positioned(
                 right: 60,
-                top: st._fontsize==Fontsize.Normal
-                    ? 37
-                    : 30,
+                top: st._fontsize == Fontsize.Normal ? 37 : 30,
                 child: Text('My Location', style: textStyle),
               ),
             ],
@@ -1862,7 +3409,7 @@ class _accessibility extends State<accessibility> {
                 right: 0,
                 // 화면 높이의 중앙보다 살짝 위쪽에 배치하여 DetailPage와 겹치지 않게 합니다.
                 // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.
-                top: MediaQuery.of(context).size.height * 0.5+40,
+                top: MediaQuery.of(context).size.height * 0.5 + 40,
                 /*
                 bottom: st._fontsize==Fontsize.Normal
                     ? MediaQuery.of(context).size.height * 0.4-10
@@ -1870,14 +3417,10 @@ class _accessibility extends State<accessibility> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.search,
-                      color: Colors.black,
-                      size: 50,
-                    ),
+                    Icon(Icons.search, color: Colors.black, size: 50),
                     SizedBox(width: 8),
                     Flexible(
-                      child:Text(
+                      child: Text(
                         //'Search \n누르면 정보를 볼 수 있어요',
                         'Enter what you are looking for Click to check the information',
                         textAlign: TextAlign.left,
@@ -1914,8 +3457,7 @@ class _accessibility extends State<accessibility> {
                     ),
                     SizedBox(width: 8),
                     Flexible(
-                      child:
-                      Text(
+                      child: Text(
                         //'직접 찾지 않아도,\n바로 정보를 볼 수 있어요',
                         'You can check the information immediately',
                         textAlign: TextAlign.left,
@@ -1933,6 +3475,7 @@ class _accessibility extends State<accessibility> {
     return resultwidget;
   }
 }
+
 class settings extends StatefulWidget {
   const settings({super.key});
 
@@ -1940,82 +3483,93 @@ class settings extends StatefulWidget {
   State<settings> createState() => _settings();
 }
 
-enum Language {Korean,English}
-enum Fontsize {Normal,Big}
+enum Language { Korean, English }
+
+enum Fontsize { Normal, Big }
 
 class _settings extends State<settings> {
   late Language _language;
   late Fontsize _fontsize;
+  late bool _aimode;
   var st;
-  Widget language_twooption(String title){
-    return Row( // 가로로 위젯들을 배치합니다.
-        children: [
-          // 1. 왼쪽에 '언어' 텍스트
-          const SizedBox(width: 20),
-          Text(
-            title,
-            style: TextStyle(fontSize: 20),
-          ),
 
-          // 2. 남는 공간을 모두 차지하여 오른쪽으로 밀어내는 역할
-          const Spacer(),
-
-          // 3. 오른쪽에 언어 선택 버튼들
-          // 선택된 언어에 따라 배경색과 글자색을 다르게 보여주기 위해
-          // Material 위젯으로 감싸 디자인합니다.
-          Material(
-            color: _language == Language.Korean ? Colors.blue : Colors.grey[200],
-            borderRadius: BorderRadius.circular(20.0),
-            child: InkWell( // 터치 효과를 주기 위해 InkWell 사용
-              borderRadius: BorderRadius.circular(20.0),
-              onTap: () {
-                st.changeLanguage(Language.Korean);
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Text(
-                  ' 한국어 ',
-                  style: TextStyle(
-                    color: _language == Language.Korean ? Colors.white : Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8), // 버튼 사이의 간격
-
-          Material(
-            color: _language == Language.English ? Colors.blue : Colors.grey[200],
-            borderRadius: BorderRadius.circular(20.0),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20.0),
-              onTap: () {
-                st.changeLanguage(Language.English);
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Text(
-                  'English',
-                  style: TextStyle(
-                    color: _language == Language.English ? Colors.white : Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-        ],
-    );
-  }
-  Widget fontsize_twooption(String title,String normal,String big){
-    return Row( // 가로로 위젯들을 배치합니다.
+  Widget language_twooption(String title) {
+    return Row(
+      // 가로로 위젯들을 배치합니다.
       children: [
         // 1. 왼쪽에 '언어' 텍스트
         const SizedBox(width: 20),
-        Text(
-          title,
-          style: TextStyle(fontSize: 20),
+        Text(title, style: TextStyle(fontSize: 20)),
+
+        // 2. 남는 공간을 모두 차지하여 오른쪽으로 밀어내는 역할
+        const Spacer(),
+
+        // 3. 오른쪽에 언어 선택 버튼들
+        // 선택된 언어에 따라 배경색과 글자색을 다르게 보여주기 위해
+        // Material 위젯으로 감싸 디자인합니다.
+        Material(
+          color: _language == Language.Korean ? Colors.blue : Colors.grey[200],
+          borderRadius: BorderRadius.circular(20.0),
+          child: InkWell(
+            // 터치 효과를 주기 위해 InkWell 사용
+            borderRadius: BorderRadius.circular(20.0),
+            onTap: () {
+              st.changeLanguage(Language.Korean);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Text(
+                ' 한국어 ',
+                style: TextStyle(
+                  color: _language == Language.Korean
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+            ),
+          ),
         ),
+        const SizedBox(width: 8), // 버튼 사이의 간격
+
+        Material(
+          color: _language == Language.English ? Colors.blue : Colors.grey[200],
+          borderRadius: BorderRadius.circular(20.0),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20.0),
+            onTap: () {
+              st.changeLanguage(Language.English);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Text(
+                'English',
+                style: TextStyle(
+                  color: _language == Language.English
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Widget fontsize_twooption(String title, String normal, String big) {
+    return Row(
+      // 가로로 위젯들을 배치합니다.
+      children: [
+        // 1. 왼쪽에 '언어' 텍스트
+        const SizedBox(width: 20),
+        Text(title, style: TextStyle(fontSize: 20)),
 
         // 2. 남는 공간을 모두 차지하여 오른쪽으로 밀어내는 역할
         const Spacer(),
@@ -2026,17 +3580,23 @@ class _settings extends State<settings> {
         Material(
           color: _fontsize == Fontsize.Normal ? Colors.blue : Colors.grey[200],
           borderRadius: BorderRadius.circular(20.0),
-          child: InkWell( // 터치 효과를 주기 위해 InkWell 사용
+          child: InkWell(
+            // 터치 효과를 주기 위해 InkWell 사용
             borderRadius: BorderRadius.circular(20.0),
             onTap: () {
               st.changeFontsize(Fontsize.Normal);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: Text(
                 normal,
                 style: TextStyle(
-                  color: _fontsize == Fontsize.Normal ? Colors.white : Colors.black,
+                  color: _fontsize == Fontsize.Normal
+                      ? Colors.white
+                      : Colors.black,
                 ),
               ),
             ),
@@ -2053,11 +3613,16 @@ class _settings extends State<settings> {
               st.changeFontsize(Fontsize.Big);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: Text(
                 big,
                 style: TextStyle(
-                  color: _fontsize == Fontsize.Big ? Colors.white : Colors.black,
+                  color: _fontsize == Fontsize.Big
+                      ? Colors.white
+                      : Colors.black,
                 ),
               ),
             ),
@@ -2067,20 +3632,160 @@ class _settings extends State<settings> {
       ],
     );
   }
+
+  Widget ai_twooption(String title, String on, String off) {
+    return Row(
+      // 가로로 위젯들을 배치합니다.
+      children: [
+        // 1. 왼쪽에 '언어' 텍스트
+        const SizedBox(width: 20),
+        Text(title, style: TextStyle(fontSize: 20)),
+        IconButton(
+          //todo
+          icon: Icon(Icons.help_outline, color: Colors.grey, size: 20),
+          // 터치 영역을 너무 넓지 않게 조절
+          padding: EdgeInsets.zero,
+          constraints: BoxConstraints(),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: st._language == Language.Korean ? Text('AI 모드란?') : Text('What is AI Mode?'),
+                  content: st._language == Language.Korean
+                      ? Text(
+                      'AI를 통해 예측된 버스 도착 정보입니다. 실제 정보와 차이가 있을 수 있으며, 참고용으로만 사용해주세요.\n\n서비스 정류장 : 금오공대종점, 금오공대입구(금오공대종점방면), 금오공대입구(옥계중학교방면)\n서비스 버스 : 10번(구미역(중앙시장) 방면), 196번(구미역(중앙시장) 방면), 960번(구미역(중앙시장) 방면), 80번(인동차고지 방면)')
+                      : Text(
+                      'This is bus arrival information predicted by AI. It may differ from the actual information and should be used for reference only.\n\n'
+                          'Service Stops: Kumoh Institute of Technology terminal, Kumoh Institute of Technology entrance (towards Kumoh Institute of Technology terminal),, Kumoh Institute of Technology entrance (towards Okgye Middle School)\n'
+                          'Service Buses: 10 (to Gumi Stn.), 196 (to Gumi Stn.), 960 (to Gumi Stn.), 80 (to Indong Garage)'),
+//
+                  /*Text(
+                    st._language == Language.Korean
+                        ? 'AI를 통해 예측된 버스 도착 정보입니다. 실제 정보와 차이가 있을 수 있으며, 참고용으로만 사용해주세요.\n\n서비스 적용 정류장 : 금오공대종점, 금오공대입구(금오공대종점방면), 금오공대입구(옥계중학교방면)\n서비스 적용 버스 : 10번(구미역(중앙시장) 방면), 196번(구미역(중앙시장) 방면), 960번(구미역(중앙시장) 방면), 80번(인동차고지 방면)'
+                        : 'This is bus arrival information predicted through AI. It may differ from the actual arrival time depending on traffic conditions and other factors. Please use it for reference only.\n\n'
+
+                  ),*/
+                  actions: <Widget>[
+                    TextButton(
+                      child: st._language == Language.Korean ? Text('확인') : Text('OK'),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // 다이얼로그 닫기
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+
+        // 2. 남는 공간을 모두 차지하여 오른쪽으로 밀어내는 역할
+        const Spacer(),
+
+        // 3. 오른쪽에 언어 선택 버튼들
+        // 선택된 언어에 따라 배경색과 글자색을 다르게 보여주기 위해
+        // Material 위젯으로 감싸 디자인합니다.
+        Material(
+          color: _aimode == true ? Colors.blue : Colors.grey[200],
+          borderRadius: BorderRadius.circular(20.0),
+          child: InkWell(
+            // 터치 효과를 주기 위해 InkWell 사용
+            borderRadius: BorderRadius.circular(20.0),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: st._language == Language.Korean
+                        ? Text('주의!')
+                        : Text('Caution!'),
+                    // content에 원하는 내용을 추가할 수 있습니다.
+                    content: st._language == Language.Korean
+                        ? Text('AI 모드는 실제 정보와 다를 수 있습니다!\n사용하시겠어요?')
+                        : Text(
+                            'AI Mode may differ from the actual information!\nDo you want to use it?',
+                          ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: st._language == Language.Korean
+                            ? Text('예')
+                            : Text('Yes'),
+                        onPressed: () {
+                          st.changeAImode(true);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: st._language == Language.Korean
+                            ? Text('아니오')
+                            : Text('No'),
+                        onPressed: () {
+                          st.changeAImode(false);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Text(
+                on,
+                style: TextStyle(
+                  color: _aimode == true ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8), // 버튼 사이의 간격
+
+        Material(
+          color: _aimode == false ? Colors.blue : Colors.grey[200],
+          borderRadius: BorderRadius.circular(20.0),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20.0),
+            onTap: () {
+              st.changeAImode(false);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Text(
+                off,
+                style: TextStyle(
+                  color: _aimode == false ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    st=Provider.of<Stackwid>(context, listen: true);
-    _language=st._language;
-    _fontsize=st._fontsize;
+    st = Provider.of<Stackwid>(context, listen: true);
+    _language = st._language;
+    _fontsize = st._fontsize;
+    _aimode = st._aimode;
     //한국어
-    if(_language==Language.Korean){
+    if (_language == Language.Korean) {
       return Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
-              // Stackwid의 backStack1 메서드를 호출하여 이전 화면으로 돌아갑니다.
-              //st.backStack1(widget.maincontext);
               st.hideSettings();
             },
           ),
@@ -2088,26 +3793,25 @@ class _settings extends State<settings> {
           backgroundColor: Colors.white,
         ),
         backgroundColor: Colors.white,
-        body:
-        Column(
+        body: Column(
           children: <Widget>[
             language_twooption('언어'),
-            const SizedBox(height:15),
-            fontsize_twooption('글자 크기','   보통   ','   크게   '),
+            const SizedBox(height: 15),
+            fontsize_twooption('글자 크기', '   보통   ', '   크게   '),
+            const SizedBox(height: 15),
+            ai_twooption('AI 모드', '   켜짐   ', '   꺼짐   '),
           ],
         ),
         //language_twooption('언어'),
       );
     }
     //in English
-    else{
+    else {
       return Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
-              // Stackwid의 backStack1 메서드를 호출하여 이전 화면으로 돌아갑니다.
-              //st.backStack1(widget.maincontext);
               st.hideSettings();
             },
           ),
@@ -2115,15 +3819,16 @@ class _settings extends State<settings> {
           backgroundColor: Colors.white,
         ),
         backgroundColor: Colors.white,
-        body:
-        Column(
+        body: Column(
           children: <Widget>[
             language_twooption('Language'),
-            const SizedBox(height:15),
-            fontsize_twooption('Font size','Normal','    Big    '),
+            const SizedBox(height: 15),
+            fontsize_twooption('Font size', 'Normal', '    Big    '),
+            const SizedBox(height: 15),
+            ai_twooption('AI Mode', '   ON   ', '   OFF   '),
           ],
         ),
-          //language_twooption('Language'),
+        //language_twooption('Language'),
       );
     }
   }
@@ -2132,51 +3837,59 @@ class _settings extends State<settings> {
 class Stackwid extends ChangeNotifier {
   late List<Widget> stacklist;
   List<Map<String, int>> favorite_list = [];
-  Language _language=Language.Korean;
-  Fontsize _fontsize=Fontsize.Normal;
+  Language _language = Language.Korean;
+  Fontsize _fontsize = Fontsize.Normal;
+
   //0:첫화면, 1:정류장, 2:버스, 3:검색, 4: 즐겨찾기
   List<int> state_ofstack = [0];
-  List<int> apistackid=[];
-  int lastapiid=-1;
+  List<int> apistackid = [];
+  int lastapiid = -1;
 
-  Map<String,String> miniid={};
+  Map<String, String> miniid = {};
 
-  bool _miniarri=false;
-  String? mini_nodeid,mini_routeid;
+  bool _miniarri = false;
+  String? mini_nodeid, mini_routeid;
   int? mini_nodeindex;
 
-  void setminiarri(String nodeid,int nodeindex, String routeid){
-    _miniarri=true;
-    mini_nodeid=nodeid;
-    mini_nodeindex=nodeindex;
-    mini_routeid=routeid;
+  bool _aimode = false;
+
+  void setminiarri(String nodeid, int nodeindex, String routeid) {
+    _miniarri = true;
+    mini_nodeid = nodeid;
+    mini_nodeindex = nodeindex;
+    mini_routeid = routeid;
     _saveSettings_miniarri();
   }
+
   void addminiarri() {
     if (mini_nodeid != null && mini_nodeindex != null && mini_routeid != null) {
-      Widget mini = Positioned(//todo 형태 깎기
-        top:70,
-        right:15,
-        child:Container(
-          width:280,
-          height:150,
-          child:miniarrivepage(
-              nodeid: mini_nodeid!,nodeindex: mini_nodeindex!, routeid: mini_routeid!),
+      Widget mini = Positioned(
+        top: 70,
+        right: 15,
+        child: Container(
+          width: 280,
+          height: 150,
+          child: miniarrivepage(
+            nodeid: mini_nodeid!,
+            nodeindex: mini_nodeindex!,
+            routeid: mini_routeid!,
+          ),
         ),
       );
       stacklist.add(mini);
     }
   }
-  void deleteminiarri(){
-    if(_miniarri){
+
+  void deleteminiarri() {
+    if (_miniarri) {
       if (_showguide) {
         stacklist.removeLast();
       }
       stacklist.removeLast();
-      _miniarri=false;
-      mini_nodeid=null;
-      mini_nodeindex=null;
-      mini_routeid=null;
+      _miniarri = false;
+      mini_nodeid = null;
+      mini_nodeindex = null;
+      mini_routeid = null;
       _saveSettings_miniarri();
       if (_showguide) {
         stacklist.add(accessibility());
@@ -2185,13 +3898,13 @@ class Stackwid extends ChangeNotifier {
     }
   }
 
-  int allocateapiid(){
+  int allocateapiid() {
     lastapiid++;
     apistackid.add(lastapiid);
     return lastapiid;
   }
 
-  void freeapiid(){
+  void freeapiid() {
     apistackid.removeLast();
     lastapiid--;
   }
@@ -2203,95 +3916,105 @@ class Stackwid extends ChangeNotifier {
 
   Future<void> _saveSettings_fontsize() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('fontsize',_fontsize.index);
+    await prefs.setInt('fontsize', _fontsize.index);
   }
 
   Future<void> _saveSettings_showguide() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('guide',_showguide);
+    await prefs.setBool('guide', _showguide);
   }
 
   Future<void> _saveSettings_miniarri() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('mini_enabled',_miniarri);
+    await prefs.setBool('mini_enabled', _miniarri);
 
-    if(mini_nodeid!=null){
-      await prefs.setString('mini_node',mini_nodeid!);
-    }
-    else{
+    if (mini_nodeid != null) {
+      await prefs.setString('mini_node', mini_nodeid!);
+    } else {
       await prefs.remove('mini_node');
     }
 
-    if(mini_nodeindex!=null){
-      await prefs.setInt('mini_nodeindex',mini_nodeindex!);
-    }
-    else{
+    if (mini_nodeindex != null) {
+      await prefs.setInt('mini_nodeindex', mini_nodeindex!);
+    } else {
       await prefs.remove('mini_nodeindex');
     }
 
-    if(mini_routeid!=null) {
+    if (mini_routeid != null) {
       await prefs.setString('mini_route', mini_routeid!);
-    }
-    else {
+    } else {
       await prefs.remove('mini_route');
     }
   }
 
+  Future<void> _saveSettings_AImode() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('aimode', _aimode);
+  }
+
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    int languageIndex=prefs.getInt('language') ?? 0;
-    _language=Language.values[languageIndex];
+    int languageIndex = prefs.getInt('language') ?? 0;
+    _language = Language.values[languageIndex];
 
-    if(_language == Language.Korean){
+    if (_language == Language.Korean) {
       search_data = search_data_KR;
     } else {
       search_data = search_data_EN;
     }
 
-    int fontsizeIndex=prefs.getInt('fontsize') ?? 0;
-    _fontsize=Fontsize.values[fontsizeIndex];
+    int fontsizeIndex = prefs.getInt('fontsize') ?? 0;
+    _fontsize = Fontsize.values[fontsizeIndex];
 
-    bool mini=prefs.getBool('mini_enabled') ?? false;
-    _miniarri=mini;
+    bool mini = prefs.getBool('mini_enabled') ?? false;
+    _miniarri = mini;
 
-    if(_miniarri){
-      mini_nodeid=prefs.getString('mini_node');
-      mini_nodeindex=prefs.getInt('mini_nodeindex');
-      mini_routeid=prefs.getString('mini_route');
+    if (_miniarri) {
+      mini_nodeid = prefs.getString('mini_node');
+      mini_nodeindex = prefs.getInt('mini_nodeindex');
+      mini_routeid = prefs.getString('mini_route');
       addminiarri();
     }
 
-    bool guide=prefs.getBool('guide') ?? true;
-    _showguide=guide;
-    if(_showguide){
+    bool ai = prefs.getBool('aimode') ?? false;
+    _aimode = ai;
+
+    bool guide = prefs.getBool('guide') ?? true;
+    _showguide = guide;
+    if (_showguide) {
       showguide();
     }
     notifyListeners();
   }
 
   //언어
-  void changeLanguage(Language change){
-    _language=change;
+  void changeLanguage(Language change) {
+    _language = change;
     _saveSettings_language();
-    if(_language==Language.Korean){
-      search_data=search_data_KR;
-    }
-    else{
-      search_data=search_data_EN;
+    if (_language == Language.Korean) {
+      search_data = search_data_KR;
+    } else {
+      search_data = search_data_EN;
     }
     notifyListeners();
   }
 
   //크기
-  void changeFontsize(Fontsize change){
-    _fontsize=change;
+  void changeFontsize(Fontsize change) {
+    _fontsize = change;
     _saveSettings_fontsize();
+    notifyListeners();
+  }
+
+  void changeAImode(bool change) {
+    _aimode = change;
+    _saveSettings_AImode();
     notifyListeners();
   }
 
   //bool first;
   Stackwid(BuildContext context) {
-    stacklist = [WebViewWidget(controller: _controller),buttons(context)];
+    stacklist = [WebViewWidget(controller: _controller), buttons(context)];
     _loadFavorites();
     _loadSettings();
   }
@@ -2351,7 +4074,7 @@ class Stackwid extends ChangeNotifier {
         Positioned(
           left: 10,
           //bottom: MediaQuery.of(context).size.height - 210.0,
-          top:30,
+          top: 30,
           child: Column(
             children: <Widget>[
               Container(
@@ -2406,7 +4129,7 @@ class Stackwid extends ChangeNotifier {
         ),
         Positioned(
           //left: MediaQuery.of(context).size.width - 100.0,
-          right:30,
+          right: 30,
           bottom: 50,
           child: Container(
             margin: const EdgeInsets.all(5.0),
@@ -2424,8 +4147,8 @@ class Stackwid extends ChangeNotifier {
         ),
         Positioned(
           //left: MediaQuery.of(context).size.width - 100.0,
-          right:20,
-          top:30,
+          right: 20,
+          top: 30,
           //bottom: 50,
           child: Container(
             margin: const EdgeInsets.all(5.0),
@@ -2433,10 +4156,10 @@ class Stackwid extends ChangeNotifier {
             width: 30,
             child: FloatingActionButton(
               onPressed: () async {
-                try{
-                  try{
+                try {
+                  try {
                     final snackBar = SnackBar(
-                      content: _language==Language.Korean
+                      content: _language == Language.Korean
                           ? Text('위치 찾는 중...')
                           : Text('Locating...'), // 표시될 텍스트
                       duration: const Duration(seconds: 3), // 3초 동안 보여주고 사라집니다.
@@ -2444,7 +4167,7 @@ class Stackwid extends ChangeNotifier {
 
                     // ✨ 2. ScaffoldMessenger를 통해 SnackBar를 화면에 표시합니다.
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }catch(e){
+                  } catch (e) {
                     print('context error');
                   }
                   Position position = await _determinePosition();
@@ -2453,18 +4176,18 @@ class Stackwid extends ChangeNotifier {
                     "long": position.longitude,
                   });
                   _controller.runJavaScript('movetopos($currentpos)');
-                }
-                catch(e){
-                  try{
+                } catch (e) {
+                  try {
                     final snackBar = SnackBar(
-                      content: _language==Language.Korean
-                          ?Text('위치 정보 사용에 문제가 발생하였습니다.')
-                          :Text('An error occurred while locating.'), // 표시될 텍스트
+                      content: _language == Language.Korean
+                          ? Text('위치 정보 사용에 문제가 발생하였습니다.')
+                          : Text('An error occurred while locating.'),
+                      // 표시될 텍스트
                       duration: const Duration(seconds: 2), // 1초 동안 보여주고 사라집니다.
                     );
                     // ✨ 2. ScaffoldMessenger를 통해 SnackBar를 화면에 표시합니다.
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }catch(e2){
+                  } catch (e2) {
                     print('context error');
                   }
                   /*
@@ -2475,7 +4198,11 @@ class Stackwid extends ChangeNotifier {
                   _controller.runJavaScript('movetopos($currentpos)');*/
                 }
               },
-              child: Icon(Icons.my_location_outlined, color: Colors.blue, size: 20),
+              child: Icon(
+                Icons.my_location_outlined,
+                color: Colors.blue,
+                size: 20,
+              ),
               backgroundColor: Colors.white,
               shape: CircleBorder(),
             ),
@@ -2556,7 +4283,7 @@ class Stackwid extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addSettings(){
+  void addSettings() {
     stacklist.add(settings());
     notifyListeners();
   }
@@ -2661,7 +4388,7 @@ class Stackwid extends ChangeNotifier {
     if (state_ofstack.last == 0) {
       //first=true;
       stacklist.add(buttons(context));
-      if(_miniarri){
+      if (_miniarri) {
         addminiarri();
       }
     }
@@ -2685,7 +4412,7 @@ class Stackwid extends ChangeNotifier {
     if (state_ofstack.last == 0) {
       //first=true;
       stacklist.add(buttons(context));
-      if(_miniarri){
+      if (_miniarri) {
         addminiarri();
       }
     }
@@ -2746,8 +4473,6 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
   double lat = 36.1430;
   double lng = 128.3941;
 
-
-
   Future<void> loadCsvData() async {
     final csvString0 = await rootBundle.loadString(
       'assets/csv/gumi_bus_stops_formap.csv',
@@ -2789,7 +4514,7 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
     final csvString52 = await rootBundle.loadString(
       'assets/csv/gumi_busnstop_search_inEng.csv',
     );
-    search_data=search_data_KR;
+    search_data = search_data_KR;
     List<List<dynamic>> before_String2 = const CsvToListConverter().convert(
       csvString52,
     );
@@ -2804,7 +4529,7 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
 
   Future<void> _checkInitialConnection() async {
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult==ConnectivityResult.none && !_isPopupShowing) {
+    if (connectivityResult == ConnectivityResult.none && !_isPopupShowing) {
       // 인터넷이 끊겨 있으면 _updateConnectionStatus 함수를 직접 호출하여 팝업 로직을 재사용합니다.
       _isPopupShowing = true;
       showPlatformDialog(
@@ -2825,6 +4550,7 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
       ).then((_) => _isPopupShowing = false);
     }
   }
+
   void _updateConnectionStatus(List<ConnectivityResult> results) {
     if (results.contains(ConnectivityResult.none) && !_isPopupShowing) {
       _isPopupShowing = true;
@@ -2856,27 +4582,36 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
     //});
 
     // ✨ 2. 앱 사용 도중의 연결 상태 변화를 계속 감지합니다.
-    _connectivitySubscription =
-        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen(
+      _updateConnectionStatus,
+    );
 
     loadCsvData();
 
-
     Future.microtask(() async {
       // 위치 권한을 확인하고 현재 위치를 가져와 지도를 초기화합니다.
-      try{
+      try {
         final position = await _determinePosition();
-        final html = _buildHtml(widget.kakaoJavascriptKey, position.latitude, position.longitude);
-        _controller.addJavaScriptChannel('toFlutter', onMessageReceived: (message) {
-          _handleJsMessage(message.message);
-        });
+        final html = _buildHtml(
+          widget.kakaoJavascriptKey,
+          position.latitude,
+          position.longitude,
+        );
+        _controller.addJavaScriptChannel(
+          'toFlutter',
+          onMessageReceived: (message) {
+            _handleJsMessage(message.message);
+          },
+        );
         _controller.loadHtmlString(html);
-      }
-      catch(e){
+      } catch (e) {
         final html = _buildHtml(widget.kakaoJavascriptKey, lat, lng);
-        _controller.addJavaScriptChannel('toFlutter', onMessageReceived: (message) {
-          _handleJsMessage(message.message);
-        });
+        _controller.addJavaScriptChannel(
+          'toFlutter',
+          onMessageReceived: (message) {
+            _handleJsMessage(message.message);
+          },
+        );
         _controller.loadHtmlString(html);
       }
       /*
@@ -2890,7 +4625,7 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
     });
     //final html = _buildHtml(widget.kakaoJavascriptKey, lat, lng);
 
-/*
+    /*
     _controller.addJavaScriptChannel(
       'toFlutter',
       onMessageReceived: (message) {
@@ -2966,24 +4701,98 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
       // 마커 클릭 통신 받고 정류장 정보 페이지 열기
       if (action == 'navigateToDetail') {
         final int stopindex = data['stopindex'];
-        if (st.state_ofstack.last == 1) {
-          st.backStack(context);
-        }
-        Widget addw = Align(
-          // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.5,
-            width: double.infinity,
-            child: DetailPage(
-              id: stop_data[stopindex][0],
-              name: stop_data[stopindex][1],
-              index: stopindex,
-              apiid: st.allocateapiid(),
+        if (st._aimode &&
+            (stopindex == 122 || stopindex == 123 || stopindex == 124)) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: st._language == Language.Korean
+                    ? Text('AI모드 정류장')
+                    : Text('AI Mode Stop'),
+                // content에 원하는 내용을 추가할 수 있습니다.
+                content: st._language == Language.Korean
+                    ? Text('이 정류장은 AI모드를 지원해요. AI모드로 보실래요?')
+                    : Text(
+                        'This stop supports AI mode. Do you want to see it?',
+                      ),
+                actions: <Widget>[
+                  TextButton(
+                    child: st._language == Language.Korean
+                        ? Text('예')
+                        : Text('Yes'),
+                    onPressed: () {
+                      if (st.state_ofstack.last == 1) {
+                        st.backStack(this.context);
+                      }
+                      Widget addw = Align(
+                        // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: MediaQuery.of(this.context).size.height * 0.5,
+                          width: double.infinity,
+                          child: DetailPage_onAI(
+                            id: stop_data[stopindex][0],
+                            name: stop_data[stopindex][1],
+                            index: stopindex,
+                            apiid: st.allocateapiid(),
+                          ),
+                        ),
+                      );
+                      st.updateStack(this.context, addw, 1);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: st._language == Language.Korean
+                        ? Text('아니오')
+                        : Text('No'),
+                    onPressed: () {
+                      if (st.state_ofstack.last == 1) {
+                        st.backStack(this.context);
+                      }
+                      Widget addw = Align(
+                        // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: MediaQuery.of(this.context).size.height * 0.5,
+                          width: double.infinity,
+                          child: DetailPage(
+                            id: stop_data[stopindex][0],
+                            name: stop_data[stopindex][1],
+                            index: stopindex,
+                            apiid: st.allocateapiid(),
+                          ),
+                        ),
+                      );
+                      st.updateStack(this.context, addw, 1);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          if (st.state_ofstack.last == 1) {
+            st.backStack(context);
+          }
+          Widget addw = Align(
+            // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: double.infinity,
+              child: DetailPage(
+                id: stop_data[stopindex][0],
+                name: stop_data[stopindex][1],
+                index: stopindex,
+                apiid: st.allocateapiid(),
+              ),
             ),
-          ),
-        );
-        st.updateStack(context, addw, 1);
+          );
+          st.updateStack(context, addw, 1);
+        }
       }
       //ver2
       else if (action == 'viewmove') {
@@ -3016,53 +4825,57 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
     super.dispose();
   }
 
+  DateTime? _lastBackPressed;
+
   @override
   Widget build(BuildContext context) {
     st = Provider.of<Stackwid>(context, listen: true);
-    //위치 때문에
-    /*
-    if (!_isWebViewLoaded) {
-      _isWebViewLoaded = true; // 플래그를 true로 설정하여 다시는 실행되지 않도록 합니다.
-
-      // 비동기 로드 로직을 Future.microtask로 감싸서 build 중에 상태 변경이 일어나는 것을 방지합니다.
-      Future.microtask(() async {
-        try {
-          // 위치 권한을 확인하고 현재 위치를 가져와 지도를 초기화합니다.
-          final position = await _determinePosition();
-          final html = _buildHtml(widget.kakaoJavascriptKey, position.latitude, position.longitude);
-          print('$position.latitude, $position.longitude');
-
-          _controller.addJavaScriptChannel('toFlutter', onMessageReceived: (message) {
-            _handleJsMessage(message.message);
-          });
-          _controller.loadHtmlString(html);
-        } catch (e) {
-          print('위치 또는 WebView 로드 오류: $e');
-          // 오류 발생 시 사용자에게 알려주는 UI를 표시할 수도 있습니다.
-          // 예: ScaffoldMessenger.of(context).showSnackBar(...)
+    st.getlastwidget();
+    return WillPopScope(
+      onWillPop: () async {
+        if (st.getlastwidget() == 1 || st.getlastwidget() == 2) {
+          st.backStack(this.context);
+          return false;
+        } else if (st.getlastwidget() == 3 || st.getlastwidget() == 4) {
+          st.backStack1(this.context);
+          return false;
         }
-      });
-    }*/
-    //
+        final now = DateTime.now(); // 현재 시간
+        // 마지막으로 누른 시간이 없거나, 누른 지 2초가 지났다면
+        if (_lastBackPressed == null ||
+            now.difference(_lastBackPressed!) > const Duration(seconds: 2)) {
+          // 현재 시간을 마지막으로 누른 시간으로 기록
+          _lastBackPressed = now;
+
+          // 화면 하단에 안내 메시지(SnackBar) 표시
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                st._language == Language.Korean
+                    ? '한 번 더 누르면 종료됩니다.'
+                    : 'Press back again to exit.',
+              ),
+              duration: const Duration(seconds: 2), // 2초 동안 보여줌
+            ),
+          );
+
+          // false를 반환하여 앱이 (아직) 종료되지 않도록 함
+          return false;
+        }
+
+        // 2초 안에 다시 눌렀다면, true를 반환하여 앱을 정상적으로 종료함
+        return true;
+        /*
+        else {
+          return true;
+        }*/
+      },
+      child: Scaffold(body: Stack(children: st.stacklist)),
+    );
+    /*
     return Scaffold(
       body: Stack(children: st.stacklist),
-      /*
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          // 임의로 다른 목업 문자열 주입(사용자가 API 응답 받았다고 가정)
-          final fakeResponse = jsonEncode({
-            "gpslati": 36.1500,
-            "gpslong": 128.3990,
-            "speed": 5.0,
-            "heading": 10.0,
-            "updatedAt": DateTime.now().toIso8601String(),
-          });
-          await _controller.runJavaScript('resetPath()');
-        },
-        label: const Text('Mock API Inject'),
-        icon: const Icon(Icons.send),
-      ),*/
-    );
+    );*/
   }
 
   String _buildHtml(String appKey, double initLat, double initLng) {
