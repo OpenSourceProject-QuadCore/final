@@ -233,9 +233,9 @@ class _busRoutePage extends State<busRoutePage> {
   late List<dynamic> data;
   late List<StopInfo> route;
 
-  //static const String baseUrl = "https://apis.data.go.kr/1613000/BusRouteInfoInqireService/getRouteAcctoThrghSttnList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=100&_type=json&cityCode=37050&routeId=";
+  String code="YOUR_CODE"
   static const String baseUrl1 =
-      "https://apis.data.go.kr/1613000/BusLcInfoInqireService/getRouteAcctoBusLcList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=10&_type=json&cityCode=37050&routeId=";
+      "https://apis.data.go.kr/1613000/BusLcInfoInqireService/getRouteAcctoBusLcList?serviceKey=${code}&pageNo=1&numOfRows=10&_type=json&cityCode=37050&routeId=";
 
   //const busRoutePage({super.key, required this.id, required this.number});
   @override
@@ -893,10 +893,9 @@ class _DetailPage extends State<DetailPage> {
   var st;
   late List<dynamic> data;
   late List<RouteInfo> buses;
-
-  //static const String baseUrl = "https://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnThrghRouteList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=150&_type=json&cityCode=37050&nodeid=";
+  String code="YOUR_CODE";
   static const String baseUrl1 =
-      "https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoArvlPrearngeInfoList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=30&_type=json&cityCode=37050&nodeId=";
+      "https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoArvlPrearngeInfoList?serviceKey=${code}&pageNo=1&numOfRows=30&_type=json&cityCode=37050&nodeId=";
   static const String baseUrl2 = "http://43.200.177.50:8000/api/arrival/";
 
   @override
@@ -1457,13 +1456,14 @@ class miniarrivepage extends StatefulWidget {
 
 class _miniarrivepage extends State<miniarrivepage> {
   late String baseUrl;
+  String code = "YOUR_CODE";
   var st;
 
   @override
   void initState() {
     super.initState();
     baseUrl =
-        "https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoSpcifyRouteBusArvlPrearngeInfoList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=10&_type=json&cityCode=37050&nodeId=${widget.nodeid}&routeId=${widget.routeid}";
+        "https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoSpcifyRouteBusArvlPrearngeInfoList?serviceKey=${code}&pageNo=1&numOfRows=10&_type=json&cityCode=37050&nodeId=${widget.nodeid}&routeId=${widget.routeid}";
   }
 
   Future<List<StoparriveInfo>> getarriveInfos() async {
@@ -2067,7 +2067,7 @@ class _DetailPage_onAI extends State<DetailPage_onAI> {
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // KakaoMap API javascript 키 입력
-  const kakaoJavascriptKey = "e945222623a72228f5a7ec826f1fa318";
+  const kakaoJavascriptKey = "YOUR_CODE";
   runApp(const MyApp(kakaoJavascriptKey: kakaoJavascriptKey));
 }
 
