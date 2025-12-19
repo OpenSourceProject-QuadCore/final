@@ -25,7 +25,8 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 <img src="https://github.com/user-attachments/assets/1cf83832-a024-4078-89a5-98eeb1259cd7" width="200" height="400"/>
 
 ### 접근성
-
+<img src="https://github.com/user-attachments/assets/e7c2001b-4e04-494b-918a-00cc5a68f2cf" width="200" height="400"/>
+<img src="https://github.com/user-attachments/assets/7bff8753-5d33-43c8-8a34-de3b372a4083" width="200" height="400"/>
 
 ### AI 모드 버스 정보
 <img src="https://github.com/user-attachments/assets/d1be9363-0108-4801-8270-ba46db9aea48" width="200" height="400"/>
@@ -34,9 +35,11 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 ### 설정
 <img src="https://github.com/user-attachments/assets/5d194484-e244-4c34-bc40-38ca96ed1c98" width="200" height="400"/>
 
-#### 언어 설정 (한국어 / 영어)
+#### 언어 설정 (영어 지원)
+<img src="https://github.com/user-attachments/assets/2289c214-fbce-4754-b1aa-f5992e6c1074" width="200" height="400"/>
 
-#### 글자 크기 (보통 / 크게)
+#### 글자 크기 (크게)
+<img src="https://github.com/user-attachments/assets/70df31c3-2950-4e50-afe0-cf9eee896cbe" width="200" height="400"/>
 
 ## 시연 동영상
 
