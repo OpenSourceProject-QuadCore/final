@@ -9,7 +9,7 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 <img src="https://github.com/user-attachments/assets/b49ef075-98e6-4f10-9f3d-78027dde8361" width="200" height="400"/>
 
 ### 버스 도착 정보
-<img src="https://github.com/user-attachments/assets/b49ef075-98e6-4f10-9f3d-78027dde8361" width="200" height="400"/>
+<img src="https://github.com/user-attachments/assets/85113150-f0bd-441d-b567-66c043f89e86" width="200" height="400"/>
 
 ### 미니 도착 정보
 <img src="https://github.com/user-attachments/assets/b69a92f5-db1b-4047-b7d3-ec834b22f0e0" width="200" height="400"/>
