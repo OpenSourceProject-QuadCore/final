@@ -20,18 +20,18 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 ### 검색
 <img src="https://github.com/user-attachments/assets/53e89b2b-e0fb-4056-b857-b1c9c9d5e547" width="200" height="400"/>
 <img src="https://github.com/user-attachments/assets/c23034cc-0dd3-4fba-a28d-d787e5c06c6e" width="200" height="400"/>
-
+(왼쪽 : 버스 번호(190) 입력 / 오른쪽  : 정류장명(금오공대) 입력)
 ### 즐겨찾기
 <img src="https://github.com/user-attachments/assets/1cf83832-a024-4078-89a5-98eeb1259cd7" width="200" height="400"/>
 
 ### 접근성
 <img src="https://github.com/user-attachments/assets/e7c2001b-4e04-494b-918a-00cc5a68f2cf" width="200" height="400"/>
 <img src="https://github.com/user-attachments/assets/7bff8753-5d33-43c8-8a34-de3b372a4083" width="200" height="400"/>
-
+(왼쪽 : OFF / 오른쪽 : ON)
 ### AI 모드 버스 정보
 <img src="https://github.com/user-attachments/assets/d1be9363-0108-4801-8270-ba46db9aea48" width="200" height="400"/>
 <img src="https://github.com/user-attachments/assets/d9549f8c-1ccf-4d03-8ecd-e65eabb7ae36" width="200" height="400"/>
-
+(왼쪽 : 버스 위치 정보 / 오른쪽 : 버스 도착 정보)
 ### 설정
 <img src="https://github.com/user-attachments/assets/5d194484-e244-4c34-bc40-38ca96ed1c98" width="200" height="400"/>
 
