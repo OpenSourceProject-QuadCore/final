@@ -6,7 +6,7 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 ## 기능
 
 ### 버스 정류장 지도
-
+![Image](https://github.com/user-attachments/assets/b49ef075-98e6-4f10-9f3d-78027dde8361)
 ### 버스 도착 정보
 
 ### 버스 위치 정보
