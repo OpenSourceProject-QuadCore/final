@@ -232,11 +232,7 @@ class _busRoutePage extends State<busRoutePage> {
   var st;
   late List<dynamic> data;
   late List<StopInfo> route;
-<<<<<<< HEAD
-=======
-
-  String code="YOUR_CODE"
->>>>>>> bd55fff1b10f002136b8fc5808aec0ca6f99ce5f
+  static const String code="YOUR_CODE";
   static const String baseUrl1 =
       "https://apis.data.go.kr/1613000/BusLcInfoInqireService/getRouteAcctoBusLcList?serviceKey=${code}&pageNo=1&numOfRows=10&_type=json&cityCode=37050&routeId=";
 
@@ -868,11 +864,7 @@ class _DetailPage extends State<DetailPage> {
   var st;
   late List<dynamic> data;
   late List<RouteInfo> buses;
-<<<<<<< HEAD
-
-=======
-  String code="YOUR_CODE";
->>>>>>> bd55fff1b10f002136b8fc5808aec0ca6f99ce5f
+  static const String code="YOUR_CODE";
   static const String baseUrl1 =
       "https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoArvlPrearngeInfoList?serviceKey=${code}&pageNo=1&numOfRows=30&_type=json&cityCode=37050&nodeId=";
   static const String baseUrl2 = "http://43.200.177.50:8000/api/arrival/";
