@@ -12,7 +12,7 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 <img src="https://github.com/user-attachments/assets/b49ef075-98e6-4f10-9f3d-78027dde8361" width="200" height="400"/>
 
 ### 미니 도착 정보
-<img src="https://github.com/user-attachments/assets/5d194484-e244-4c34-bc40-38ca96ed1c98" width="200" height="400"/>
+<img src="https://github.com/user-attachments/assets/b69a92f5-db1b-4047-b7d3-ec834b22f0e0" width="200" height="400"/>
 
 ### 버스 위치 정보
 <img src="https://github.com/user-attachments/assets/bf7d5db1-6993-4c93-a3bb-0a7647bfb5b0" width="200" height="400"/>
@@ -32,7 +32,7 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 <img src="https://github.com/user-attachments/assets/d9549f8c-1ccf-4d03-8ecd-e65eabb7ae36" width="200" height="400"/>
 
 ### 설정
-<img src="https://github.com/user-attachments/assets/b69a92f5-db1b-4047-b7d3-ec834b22f0e0" width="200" height="400"/>
+<img src="https://github.com/user-attachments/assets/5d194484-e244-4c34-bc40-38ca96ed1c98" width="200" height="400"/>
 
 #### 언어 설정 (한국어 / 영어)
 
