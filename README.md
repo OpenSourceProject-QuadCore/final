@@ -7,6 +7,10 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 
 ### 버스 정류장 지도
 <img src="https://github.com/user-attachments/assets/b49ef075-98e6-4f10-9f3d-78027dde8361" width="200" height="400"/>
+- 현재 지도 화면 내의 정류장에 클릭할 수 있는 마커를 설치
+- 지도를 이동하면 다시 지도 내의 마커를 최신화, 정류장 위치를 지속적으로 알려줌
+- 일정 수준 이상 확대해야 마커 확인 가능
+- 위치 정보 이용을 동의하면 '내 위치' 버튼을 통해 현재 기기의 위치를 찾아서 지도 이동 가능
 
 ### 버스 도착 정보
 <img src="https://github.com/user-attachments/assets/85113150-f0bd-441d-b567-66c043f89e86" width="200" height="400"/>
