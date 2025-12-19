@@ -232,12 +232,10 @@ class _busRoutePage extends State<busRoutePage> {
   var st;
   late List<dynamic> data;
   late List<StopInfo> route;
-
-  //static const String baseUrl = "https://apis.data.go.kr/1613000/BusRouteInfoInqireService/getRouteAcctoThrghSttnList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=100&_type=json&cityCode=37050&routeId=";
   static const String baseUrl1 =
       "https://apis.data.go.kr/1613000/BusLcInfoInqireService/getRouteAcctoBusLcList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=10&_type=json&cityCode=37050&routeId=";
 
-  //const busRoutePage({super.key, required this.id, required this.number});
+
   @override
   void initState() {
     super.initState();
@@ -394,10 +392,6 @@ class _busRoutePage extends State<busRoutePage> {
     return Scaffold(
       appBar: AppBar(
         title: title,
-        /*Text(
-          '${widget.number} (${data[0]} 방면)',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),*/
         backgroundColor: Colors.white,
         actions: <Widget>[
           // 아이콘으로 만들어진 버튼
@@ -420,8 +414,7 @@ class _busRoutePage extends State<busRoutePage> {
       ),
       body: FutureBuilder(
         //<List<StopInfo>>(
-        future: getlocations(),
-        //Future.wait([getStops(),getlocations()]),//getStops(), // 데이터 로드 함수 호출
+        future: getlocations(),// 데이터 로드 함수 호출
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때
@@ -444,7 +437,6 @@ class _busRoutePage extends State<busRoutePage> {
 
           if (snapshot.hasData) {
             // 데이터 수신 성공 시
-            //final List<StopInfo> stops = snapshot.data![0] as List<StopInfo>;
             final List<busposition> poses = snapshot.data as List<busposition>;
 
             if (route.isEmpty) {
@@ -477,11 +469,6 @@ class _busRoutePage extends State<busRoutePage> {
                   color: Colors.grey,
                   size: 30,
                 );
-                /*Widget arrow_line=Stack(
-                  alignment: Alignment.center,
-                  children:<Widget>[
-                    Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 40),SizedBox(width: 3,height:180,child:Container(color: Colors.grey))],
-                );*/
                 for (int i = 0; i < poses.length; i++) {
                   if (stop.nodeID == poses[i].nodeID) {
                     stopicon = Icon(
@@ -495,7 +482,6 @@ class _busRoutePage extends State<busRoutePage> {
 
                 return ListTile(
                   leading: stopicon,
-                  //const Icon(Icons.circle, color: Colors.grey, size: 15),
                   title: Text(
                     '${stop.nodeName}',
                     style: TextStyle(
@@ -605,9 +591,7 @@ class _busRoutePage_onAI extends State<busRoutePage_onAI> {
 
   Future<List<busposition_onAI>> getlocations() async {
     try {
-      //final id = this.id;
       // 2. HTTP GET 요청 실행
-      //final response = await http.get(Uri.parse($baseUrl));
       final url = Uri.parse("$baseUrl1${widget.id}");
       final response = await http.get(url).timeout(const Duration(seconds: 5));
 
@@ -616,7 +600,6 @@ class _busRoutePage_onAI extends State<busRoutePage_onAI> {
         final jsonResponse = jsonDecode(body);
 
         late final List<dynamic> items;
-        //late final List<StoparriveInfo> result;
         if (jsonResponse.length == 0) {
           return [];
         }
@@ -635,7 +618,6 @@ class _busRoutePage_onAI extends State<busRoutePage_onAI> {
       // ✨ 2. 타임아웃 오류: 서버가 요청을 받았지만 5초 안에 응답을 주지 않은 경우
       print('AI 서버 응답 시간 초과: TimeoutException.');
       return [];
-      //throw Exception('AI 서버가 응답하지 않습니다.');
     } catch (e) {
       // 6. 네트워크 오류 (인터넷 연결 끊김 등)
       print('AI 버스 위치 네트워크 요청 중 오류 발생: $e');
@@ -706,10 +688,6 @@ class _busRoutePage_onAI extends State<busRoutePage_onAI> {
     return Scaffold(
       appBar: AppBar(
         title: title,
-        /*Text(
-          '${widget.number} (${data[0]} 방면)',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),*/
         backgroundColor: Colors.white,
         actions: <Widget>[
           // 아이콘으로 만들어진 버튼
@@ -788,11 +766,6 @@ class _busRoutePage_onAI extends State<busRoutePage_onAI> {
                       color: Colors.grey,
                       size: 30,
                     );
-                    /*Widget arrow_line=Stack(
-                  alignment: Alignment.center,
-                  children:<Widget>[
-                    Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 40),SizedBox(width: 3,height:180,child:Container(color: Colors.grey))],
-                );*/
                     for (int i = 0; i < poses.length; i++) {
                       if (stop.nodeID == poses[i].nodeID) {
                         stopicon = Icon(
@@ -808,7 +781,6 @@ class _busRoutePage_onAI extends State<busRoutePage_onAI> {
 
                     return ListTile(
                       leading: stopicon,
-                      //const Icon(Icons.circle, color: Colors.grey, size: 15),
                       title: Text(
                         '${stop.nodeName}',
                         style: TextStyle(
@@ -883,18 +855,15 @@ class DetailPage extends StatefulWidget {
     required this.apiid,
   });
 
-  //const DetailPage({super.key, required this.index});
   @override
   State<DetailPage> createState() => _DetailPage();
 }
 
 class _DetailPage extends State<DetailPage> {
-  //final String id,name;
   var st;
   late List<dynamic> data;
   late List<RouteInfo> buses;
 
-  //static const String baseUrl = "https://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnThrghRouteList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=150&_type=json&cityCode=37050&nodeid=";
   static const String baseUrl1 =
       "https://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoArvlPrearngeInfoList?serviceKey=0e8d45a31b5844ea457426701ab25d0732b16b9074643572222e9c3deaa1547f&pageNo=1&numOfRows=30&_type=json&cityCode=37050&nodeId=";
   static const String baseUrl2 = "http://43.200.177.50:8000/api/arrival/";
@@ -967,7 +936,6 @@ class _DetailPage extends State<DetailPage> {
         } else {
           items = jsonResponse['response']['body']['items']['item'] as List;
         }
-        //final items = jsonResponse['response']['body']['items']['item'] as List;
         // items 리스트를 RouteInfo 객체 리스트로 변환
         final List<StoparriveInfo> result = items
             .map((json) => StoparriveInfo.fromJson(json))
@@ -998,7 +966,6 @@ class _DetailPage extends State<DetailPage> {
         final jsonResponse = jsonDecode(body);
 
         late final List<dynamic> items;
-        //late final List<StoparriveInfo> result;
         if (jsonResponse.length == 0) {
           return [];
         }
@@ -1010,7 +977,6 @@ class _DetailPage extends State<DetailPage> {
       } else {
         // 5. 서버 오류 (예: 400 Bad Request, 403 Forbidden 등)
         return [];
-        //throw Exception('API 요청 실패 (Status Code: ${response.statusCode})');
       }
     } on TimeoutException {
       // ✨ 2. 타임아웃 오류: 서버가 요청을 받았지만 5초 안에 응답을 주지 않은 경우
@@ -1021,7 +987,6 @@ class _DetailPage extends State<DetailPage> {
       // 6. 네트워크 오류 (인터넷 연결 끊김 등)
       print('AI 도착 네트워크 요청 중 오류 발생: $e');
       return [];
-      //throw Exception('데이터 로드 실패: $e');
     }
   }
 
@@ -1091,13 +1056,11 @@ class _DetailPage extends State<DetailPage> {
         ],
       ),
       body: FutureBuilder(
-        //<List<RouteInfo>>(
-        future: //getarriveInfos(),
+        future:
         Future.wait([
           getarriveInfos(),
           getarriveInfos_AI(),
-        ]),
-        //getStopRoutes(), // 데이터 로드 함수 호출
+        ]), // 데이터 로드 함수 호출
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때
@@ -1130,7 +1093,7 @@ class _DetailPage extends State<DetailPage> {
                 snapshot.data![0]
                     as List<
                       StoparriveInfo
-                    >; //snapshot.data as List<StoparriveInfo>;
+                    >;
             final List<StoparriveInfo_onAI> arrives_onAI =
                 snapshot.data![1] as List<StoparriveInfo_onAI>;
 
@@ -1251,7 +1214,6 @@ class _DetailPage extends State<DetailPage> {
                   }
                   return ListTile(
                     leading: busicon,
-                    //const Icon(Icons.directions_bus, color: Colors.indigo),
                     title: Text(
                       '${route.routeNo}',
                       style: TextStyle(
@@ -1267,7 +1229,7 @@ class _DetailPage extends State<DetailPage> {
                           (route.busindex == 263 ||
                               route.busindex == 96 ||
                               route.busindex == 325 ||
-                              route.busindex == 326)) {
+                              route.busindex == 6)) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -1485,7 +1447,6 @@ class _miniarrivepage extends State<miniarrivepage> {
         // API 응답 구조: jsonResponse['response']['body']['items']['item']
         // 데이터를 item 리스트까지 접근
         late final List<dynamic> items;
-        //late final List<StoparriveInfo> result;
         if (jsonResponse['response']['body']['totalCount'] == 1) {
           items = [jsonResponse['response']['body']['items']['item']];
         } else if (jsonResponse['response']['body']['totalCount'] == 0) {
@@ -1493,7 +1454,6 @@ class _miniarrivepage extends State<miniarrivepage> {
         } else {
           items = jsonResponse['response']['body']['items']['item'] as List;
         }
-        //final items = jsonResponse['response']['body']['items']['item'] as List;
         // items 리스트를 RouteInfo 객체 리스트로 변환
         final List<StoparriveInfo> result = items
             .map((json) => StoparriveInfo.fromJson(json))
@@ -1538,15 +1498,6 @@ class _miniarrivepage extends State<miniarrivepage> {
                       //overflow: TextOverflow.ellipsis, // 글자가 길면 ... 처리
                     ),
                   ),
-                  /*
-                    Text(
-                      mainText,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: st._fontsize == Fontsize.Normal ? 20 : 28,
-                      ),
-                      overflow: TextOverflow.ellipsis, // 글자가 길면 ... 처리
-                    ),*/
                   Text(
                     subText,
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
@@ -1562,7 +1513,6 @@ class _miniarrivepage extends State<miniarrivepage> {
                   icon: Icon(Icons.close),
                   onPressed: () {
                     st.deleteminiarri();
-                    // 예: st.removeMiniWidget(this.widget);
                   },
                 ),
                 IconButton(
@@ -1573,14 +1523,6 @@ class _miniarrivepage extends State<miniarrivepage> {
                 ),
               ],
             ),
-            /*
-            IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () {
-                st.deleteminiarri();
-                // 예: st.removeMiniWidget(this.widget);
-              },
-            ),*/
           ],
         ),
       ),
@@ -1649,7 +1591,6 @@ class DetailPage_onAI extends StatefulWidget {
     required this.apiid,
   });
 
-  //const DetailPage({super.key, required this.index});
   @override
   State<DetailPage_onAI> createState() => _DetailPage_onAI();
 }
@@ -1706,7 +1647,6 @@ class _DetailPage_onAI extends State<DetailPage_onAI> {
         final jsonResponse = jsonDecode(body);
 
         late final List<dynamic> items;
-        //late final List<StoparriveInfo> result;
 
         if (jsonResponse.isEmpty) {
           // 데이터가 null 이면 빈 리스트 반환
@@ -1716,7 +1656,7 @@ class _DetailPage_onAI extends State<DetailPage_onAI> {
         final List<StoparriveInfo_onAI2> result = items
             .map((json) => StoparriveInfo_onAI2.fromJson(json))
             .toList();
-        return result; //items.map((json) => StoparriveInfo.fromJson(json)).toList();
+        return result;
       } else {
         // 5. 서버 오류 (예: 400 Bad Request, 403 Forbidden 등)
         throw Exception('API 요청 실패 (Status Code: ${response.statusCode})');
@@ -1771,7 +1711,6 @@ class _DetailPage_onAI extends State<DetailPage_onAI> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          //'${widget.name}',
           '${data[1]}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -1800,9 +1739,7 @@ class _DetailPage_onAI extends State<DetailPage_onAI> {
         ],
       ),
       body: FutureBuilder(
-        //<List<RouteInfo>>(
         future: getarriveInfos(),
-        //Future.wait([getStopRoutes(),getarriveInfos()]),//getStopRoutes(), // 데이터 로드 함수 호출
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때
@@ -1918,7 +1855,6 @@ class _DetailPage_onAI extends State<DetailPage_onAI> {
                     }
                     return ListTile(
                       leading: busicon,
-                      //const Icon(Icons.directions_bus, color: Colors.indigo),
                       title: Text(
                         '${route.routeNo}',
                         style: TextStyle(
@@ -1927,16 +1863,13 @@ class _DetailPage_onAI extends State<DetailPage_onAI> {
                         ),
                       ),
                       subtitle: subTitle,
-                      //Text('${route.endStName}방면'),
-                      //Text('기점: ${route.startStName} | 종점: ${route.endStName}'),
                       trailing: Text(arrtime, style: style),
-                      //const Icon(Icons.arrow_forward_ios, size: 14),
                       onTap: () {
                         if (st._aimode &&
                             (route.busindex == 263 ||
                                 route.busindex == 96 ||
                                 route.busindex == 325 ||
-                                route.busindex == 326)) {
+                                route.busindex == 6)) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -2091,7 +2024,6 @@ class _Searchpage extends State<Searchpage> {
   void initState() {
     super.initState();
     // 2. 초기화: 처음에는 전체 데이터를 표시합니다.
-    //_filteredList.addAll(search_data);
     _filteredList = [];
 
     // 3. 리스너 추가: _searchController의 텍스트가 변경될 때마다 _filterList 함수를 호출합니다.
@@ -2180,8 +2112,6 @@ class _Searchpage extends State<Searchpage> {
               // onChanged: (value) => _filterList(), // 이 방식도 사용 가능
             ),
 
-            //const SizedBox(height: 0),
-
             // 6. 필터링된 결과를 표시하는 리스트
             Expanded(
               child: _filteredList.isEmpty
@@ -2229,14 +2159,14 @@ class _Searchpage extends State<Searchpage> {
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           child: ListTile(
                             title:
-                                title, //Text('${_filteredList[index]['text']}'),
+                                title,
                             onTap: () {
                               if (type == 0) {
                                 if (st._aimode &&
                                     (dataindex == 263 ||
                                         dataindex == 96 ||
                                         dataindex == 325 ||
-                                        dataindex == 326)) {
+                                        dataindex == 6)) {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -2347,30 +2277,7 @@ class _Searchpage extends State<Searchpage> {
                                   );
                                   st.updateStack(widget.maincontext, addw, 2);
                                 }
-                                //if(int.parse(search_data[1][_filteredList[index]['index']])==0){
-                                //int busindex=int.parse(search_data[2][_filteredList[index]['index']]);
-                                /*
-                                Widget addw = Align(
-                                  // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
-                                  alignment: Alignment.bottomCenter,
-                                  child: Container(
-                                    height:
-                                        MediaQuery.of(
-                                          widget.maincontext,
-                                        ).size.height *
-                                        0.5,
-                                    width: double.infinity,
-                                    child: busRoutePage(
-                                      id: bus_data[dataindex][1],
-                                      number: bus_data[dataindex][2].toString(),
-                                      index: dataindex,
-                                      apiid: st.allocateapiid(),
-                                    ),
-                                  ),
-                                );
-                                st.updateStack(widget.maincontext, addw, 2);*/
                               } else {
-                                //int stopindex=int.parse(search_data[2][_filteredList[index]['index']]);
                                 if (st._aimode &&
                                     (dataindex == 122 ||
                                         dataindex == 123 ||
@@ -2505,33 +2412,6 @@ class _Searchpage extends State<Searchpage> {
                                   );
                                   st.updateStack(widget.maincontext, addw, 1);
                                 }
-                                /*
-                                final selectstop = jsonEncode({
-                                  "lati": stop_data[dataindex][3],
-                                  "long": stop_data[dataindex][4],
-                                });
-                                _controller.runJavaScript(
-                                  'selectstop_insearch($selectstop)',
-                                );
-                                Widget addw = Align(
-                                  // 🌟 Align을 사용하여 다이얼로그를 하단(bottomCenter)에 배치
-                                  alignment: Alignment.bottomCenter,
-                                  child: Container(
-                                    height:
-                                        MediaQuery.of(
-                                          widget.maincontext,
-                                        ).size.height *
-                                        0.5,
-                                    width: double.infinity,
-                                    child: DetailPage(
-                                      id: stop_data[dataindex][0],
-                                      name: stop_data[dataindex][1],
-                                      index: dataindex,
-                                      apiid: st.allocateapiid(),
-                                    ),
-                                  ),
-                                );
-                                st.updateStack(widget.maincontext, addw, 1);*/
                               }
                             },
                           ),
@@ -2676,7 +2556,7 @@ class _Favoritepage extends State<Favoritepage> {
                               (itemIndex == 263 ||
                                   itemIndex == 96 ||
                                   itemIndex == 325 ||
-                                  itemIndex == 326)) {
+                                  itemIndex == 6)) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -2778,25 +2658,6 @@ class _Favoritepage extends State<Favoritepage> {
                             );
                             st.updateStack(widget.maincontext, addw, 2);
                           }
-                          /*
-                          Widget addw = Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              height:
-                                  MediaQuery.of(
-                                    widget.maincontext,
-                                  ).size.height *
-                                  0.5,
-                              width: double.infinity,
-                              child: busRoutePage(
-                                id: bus_data[itemIndex][1],
-                                number: bus_data[itemIndex][2].toString(),
-                                index: itemIndex,
-                                apiid: st.allocateapiid(),
-                              ),
-                            ),
-                          );
-                          st.updateStack(widget.maincontext, addw, 2);*/
                         } else {
                           //정류장
                           if (st._aimode &&
@@ -2924,34 +2785,6 @@ class _Favoritepage extends State<Favoritepage> {
                             );
                             st.updateStack(widget.maincontext, addw, 1);
                           }
-                          // 정류장
-                          /*
-                          final selectstop = jsonEncode({
-                            "lati": stop_data[itemIndex][3],
-                            "long": stop_data[itemIndex][4],
-                          });
-                          _controller.runJavaScript(
-                            'selectstop_insearch($selectstop)',
-                          );
-
-                          Widget addw = Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              height:
-                                  MediaQuery.of(
-                                    widget.maincontext,
-                                  ).size.height *
-                                  0.5,
-                              width: double.infinity,
-                              child: DetailPage(
-                                id: stop_data[itemIndex][0],
-                                name: stop_data[itemIndex][1],
-                                index: itemIndex,
-                                apiid: st.allocateapiid(),
-                              ),
-                            ),
-                          );
-                          st.updateStack(widget.maincontext, addw, 1);*/
                         }
                       },
                     ),
@@ -2983,8 +2816,6 @@ class _accessibility extends State<accessibility> {
       fontSize: st._fontsize == Fontsize.Normal ? 18 : 25,
     );
     // 버튼의 현재 위치를 계산합니다. (buttons 메서드의 위치 계산과 동일하게)
-    //final double buttonBottomPosition =
-    //    MediaQuery.of(context).size.height - 76.0;
     if (st._language == Language.Korean) {
       if (st.getlastwidget() == 0) {
         final double buttonBottomPosition =
@@ -3032,8 +2863,7 @@ class _accessibility extends State<accessibility> {
                 left: 75, // 아이콘 너비(50) + 여백(20)
                 bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition + 5
-                    : buttonBottomPosition - 2,
-                //buttonBottomPosition + 5, // 첫 번째 버튼의 높이에 맞춤
+                    : buttonBottomPosition - 2, // 첫 번째 버튼의 높이에 맞춤
                 child: Text('검색하기', style: textStyle),
               ),
 
@@ -3042,8 +2872,7 @@ class _accessibility extends State<accessibility> {
                 left: 75,
                 bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition - 55
-                    : buttonBottomPosition - 62,
-                //buttonBottomPosition - 55, // 두 번째 버튼의 높이에 맞춤
+                    : buttonBottomPosition - 62,// 두 번째 버튼의 높이에 맞춤
                 child: Text('즐겨찾기', style: textStyle),
               ),
 
@@ -3052,8 +2881,7 @@ class _accessibility extends State<accessibility> {
                 left: 75,
                 bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition - 115
-                    : buttonBottomPosition - 122,
-                //buttonBottomPosition - 115, // 세 번째 버튼의 높이에 맞춤
+                    : buttonBottomPosition - 122,// 세 번째 버튼의 높이에 맞춤
                 child: Text('도움말', style: textStyle),
               ),
               Positioned(
@@ -3092,17 +2920,6 @@ class _accessibility extends State<accessibility> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(Icons.location_on, color: Colors.black, size: 50),
-
-                    //SizedBox(height: 8),
-                    /*
-                    Flexible(
-                      child:
-                      Text(
-                        '버스 도착 정보를 볼 수 있고, 누르면 버스 정보를 확인할 수 있어요',
-                        textAlign: TextAlign.left,
-                        style: textStyle,
-                      ),
-                    ),*/
                     Text(
                       '버스 도착 정보를 볼 수 있고,\n누르면 버스 정보를 확인할 수 있어요',
                       textAlign: TextAlign.left,
@@ -3136,7 +2953,6 @@ class _accessibility extends State<accessibility> {
                 right: 0,
                 // 화면 높이의 중앙보다 살짝 위쪽에 배치하여 DetailPage와 겹치지 않게 합니다.
                 // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.
-                //top: MediaQuery.of(context).size.height * 0.35,
                 bottom: MediaQuery.of(context).size.height * 0.5 + 5,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -3169,10 +2985,8 @@ class _accessibility extends State<accessibility> {
                 left: 15,
                 right: 0,
                 // 화면 높이의 중앙보다 살짝 위쪽에 배치하여 DetailPage와 겹치지 않게 합니다.
-                // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.
-                //top: MediaQuery.of(context).size.height * 0.35,
+                // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.]
                 top: MediaQuery.of(context).size.height * 0.5 + 40,
-                //bottom: MediaQuery.of(context).size.height * 0.4 - 10,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -3205,7 +3019,6 @@ class _accessibility extends State<accessibility> {
                 right: 0,
                 // 화면 높이의 중앙보다 살짝 위쪽에 배치하여 DetailPage와 겹치지 않게 합니다.
                 // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.
-                //top: MediaQuery.of(context).size.height * 0.35,
                 bottom: MediaQuery.of(context).size.height * 0.8,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -3276,7 +3089,6 @@ class _accessibility extends State<accessibility> {
                 bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition + 5
                     : buttonBottomPosition - 2, // 첫 번째 버튼의 높이에 맞춤
-                //buttonBottomPosition + 5, // 첫 번째 버튼의 높이에 맞춤
                 child: Text('Search', style: textStyle),
               ),
 
@@ -3285,8 +3097,7 @@ class _accessibility extends State<accessibility> {
                 left: 75,
                 bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition - 55
-                    : buttonBottomPosition - 62,
-                //buttonBottomPosition - 55, // 두 번째 버튼의 높이에 맞춤
+                    : buttonBottomPosition - 62, // 두 번째 버튼의 높이에 맞춤
                 child: Text('Favorites', style: textStyle),
               ),
 
@@ -3295,8 +3106,7 @@ class _accessibility extends State<accessibility> {
                 left: 75,
                 bottom: st._fontsize == Fontsize.Normal
                     ? buttonBottomPosition - 115
-                    : buttonBottomPosition - 122,
-                //buttonBottomPosition - 115, // 세 번째 버튼의 높이에 맞춤
+                    : buttonBottomPosition - 122, // 세 번째 버튼의 높이에 맞춤
                 child: Text('Help', style: textStyle),
               ),
               Positioned(
@@ -3329,7 +3139,6 @@ class _accessibility extends State<accessibility> {
                 right: 0,
                 // 화면 높이의 중앙보다 살짝 위쪽에 배치하여 DetailPage와 겹치지 않게 합니다.
                 // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.
-                //top: MediaQuery.of(context).size.height * 0.35,
                 bottom: MediaQuery.of(context).size.height * 0.5 + 5,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -3339,11 +3148,8 @@ class _accessibility extends State<accessibility> {
                       color: Colors.black,
                       size: 50,
                     ),
-                    //SizedBox(height: 8),
                     Text(
-                      //'버스 도착 정보를 볼 수 있고,\n누르면 버스 정보를 확인할 수 있어요',
                       'Check arrival information\nTap to check bus information',
-                      //'Check arrival information\nTap to check bus information',
                       textAlign: TextAlign.left,
                       style: textStyle,
                     ),
@@ -3385,7 +3191,6 @@ class _accessibility extends State<accessibility> {
                       color: Colors.black,
                       size: 50,
                     ),
-                    //SizedBox(height: 8),
                     Text(
                       'Check bus route\nTap to move to stop',
                       textAlign: TextAlign.left,
@@ -3410,10 +3215,6 @@ class _accessibility extends State<accessibility> {
                 // 화면 높이의 중앙보다 살짝 위쪽에 배치하여 DetailPage와 겹치지 않게 합니다.
                 // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.
                 top: MediaQuery.of(context).size.height * 0.5 + 40,
-                /*
-                bottom: st._fontsize==Fontsize.Normal
-                    ? MediaQuery.of(context).size.height * 0.4-10
-                    : MediaQuery.of(context).size.height * 0.3+10,*/
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -3421,7 +3222,6 @@ class _accessibility extends State<accessibility> {
                     SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        //'Search \n누르면 정보를 볼 수 있어요',
                         'Enter what you are looking for Click to check the information',
                         textAlign: TextAlign.left,
                         style: textStyle,
@@ -3445,7 +3245,6 @@ class _accessibility extends State<accessibility> {
                 right: 0,
                 // 화면 높이의 중앙보다 살짝 위쪽에 배치하여 DetailPage와 겹치지 않게 합니다.
                 // 이 값을 조절하여 원하는 위치를 맞출 수 있습니다.
-                //top: MediaQuery.of(context).size.height * 0.35,
                 bottom: MediaQuery.of(context).size.height * 0.8,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -3458,7 +3257,6 @@ class _accessibility extends State<accessibility> {
                     SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        //'직접 찾지 않아도,\n바로 정보를 볼 수 있어요',
                         'You can check the information immediately',
                         textAlign: TextAlign.left,
                         style: textStyle,
@@ -3659,13 +3457,7 @@ class _settings extends State<settings> {
                       'This is bus arrival information predicted by AI. It may differ from the actual information and should be used for reference only.\n\n'
                           'Service Stops: Kumoh Institute of Technology terminal, Kumoh Institute of Technology entrance (towards Kumoh Institute of Technology terminal),, Kumoh Institute of Technology entrance (towards Okgye Middle School)\n'
                           'Service Buses: 10 (to Gumi Stn.), 196 (to Gumi Stn.), 960 (to Gumi Stn.), 80 (to Indong Garage)'),
-//
-                  /*Text(
-                    st._language == Language.Korean
-                        ? 'AI를 통해 예측된 버스 도착 정보입니다. 실제 정보와 차이가 있을 수 있으며, 참고용으로만 사용해주세요.\n\n서비스 적용 정류장 : 금오공대종점, 금오공대입구(금오공대종점방면), 금오공대입구(옥계중학교방면)\n서비스 적용 버스 : 10번(구미역(중앙시장) 방면), 196번(구미역(중앙시장) 방면), 960번(구미역(중앙시장) 방면), 80번(인동차고지 방면)'
-                        : 'This is bus arrival information predicted through AI. It may differ from the actual arrival time depending on traffic conditions and other factors. Please use it for reference only.\n\n'
 
-                  ),*/
                   actions: <Widget>[
                     TextButton(
                       child: st._language == Language.Korean ? Text('확인') : Text('OK'),
@@ -4270,7 +4062,6 @@ class Stackwid extends ChangeNotifier {
   void showguide() {
     Widget guide = accessibility();
     stacklist.add(guide);
-    //stacklist.add(const accessibility());
     _showguide = true;
     _saveSettings_showguide();
     notifyListeners();
@@ -4328,7 +4119,6 @@ class Stackwid extends ChangeNotifier {
     stacklist = [WebViewWidget(controller: _controller), buttons(context)];
     state_ofstack = [0];
     notifyListeners();
-    //first=true;
   }
 
   void onlymap() {
@@ -4361,7 +4151,6 @@ class Stackwid extends ChangeNotifier {
           height: 30,
           width: 30,
           child: IconButton(
-            //FloatingActionButton(
             onPressed: () {
               backStack(context);
             },
@@ -4386,7 +4175,6 @@ class Stackwid extends ChangeNotifier {
     state_ofstack.removeLast();
     freeapiid();
     if (state_ofstack.last == 0) {
-      //first=true;
       stacklist.add(buttons(context));
       if (_miniarri) {
         addminiarri();
@@ -4410,7 +4198,6 @@ class Stackwid extends ChangeNotifier {
     stacklist.removeLast();
     state_ofstack.removeLast();
     if (state_ofstack.last == 0) {
-      //first=true;
       stacklist.add(buttons(context));
       if (_miniarri) {
         addminiarri();
@@ -4430,25 +4217,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /*
-    return MaterialApp(
-      title: 'Kakao Map (WebView)',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
-      home: KakaoMapPage(kakaoJavascriptKey: kakaoJavascriptKey),
-    );*/
-
     return ChangeNotifierProvider<Stackwid>(
       create: (_) => Stackwid(context),
       child: MaterialApp(
         title: 'NavigatorDemo',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: KakaoMapPage(kakaoJavascriptKey: kakaoJavascriptKey),
-        /*
-        initialRoute: '/first',
-        routes: {
-          '/first': (context) => KakaoMapPage(kakaoJavascriptKey: kakaoJavascriptKey),
-          '/second': (context) => DetailPage(id: id, name: name),
-        },*/
       ),
     );
   }
@@ -4577,9 +4351,6 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
   void initState() {
     super.initState();
     _checkInitialConnection();
-    //WidgetsBinding.instance.addPostFrameCallback((_) {
-    //  _checkInitialConnection();
-    //});
 
     // ✨ 2. 앱 사용 도중의 연결 상태 변화를 계속 감지합니다.
     _connectivitySubscription = Connectivity().onConnectivityChanged.listen(
@@ -4614,25 +4385,7 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
         );
         _controller.loadHtmlString(html);
       }
-      /*
-      final position = await _determinePosition();
-      final html = _buildHtml(widget.kakaoJavascriptKey, position.latitude, position.longitude);
-
-      _controller.addJavaScriptChannel('toFlutter', onMessageReceived: (message) {
-        _handleJsMessage(message.message);
-      });
-      _controller.loadHtmlString(html);*/
     });
-    //final html = _buildHtml(widget.kakaoJavascriptKey, lat, lng);
-
-    /*
-    _controller.addJavaScriptChannel(
-      'toFlutter',
-      onMessageReceived: (message) {
-        _handleJsMessage(message.message);
-      },
-    );
-    _controller.loadHtmlString(html);*/
   }
 
   Future<Position> _determinePosition() async {
@@ -4872,10 +4625,6 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
       },
       child: Scaffold(body: Stack(children: st.stacklist)),
     );
-    /*
-    return Scaffold(
-      body: Stack(children: st.stacklist),
-    );*/
   }
 
   String _buildHtml(String appKey, double initLat, double initLng) {
