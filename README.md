@@ -68,7 +68,7 @@ Flutter를 통한 iOS와 Android를 지원하는 크로스플랫폼 애플리케
 
 ### AI 모드 버스 정보
 <img src="https://github.com/user-attachments/assets/d1be9363-0108-4801-8270-ba46db9aea48" width="200" height="400"/>
-
+<img src="https://github.com/user-attachments/assets/d9549f8c-1ccf-4d03-8ecd-e65eabb7ae36" width="200" height="400"/>
 (왼쪽 : 버스 정보(196) / 오른쪽 : 정류장 정보(금오공대종점))
 
 ### 설정
