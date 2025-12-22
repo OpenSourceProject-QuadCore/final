@@ -99,3 +99,4 @@ Flutter를 통해 구현한 크로스플랫폼, iOS와 Android 둘 다 지원 �
 ## 시연 동영상
 
 Android : <https://www.youtube.com/shorts/VvfuEnAlxsk>
+iOS : <https://www.youtube.com/shorts/YSINX8eiB00>
